@@ -9,12 +9,6 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-
 public class DecryptionSteps {
 
 	private static BufferedImage img;
