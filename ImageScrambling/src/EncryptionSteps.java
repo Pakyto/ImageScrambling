@@ -133,11 +133,8 @@ public class EncryptionSteps {
 
 		BufferedImage ycb =  new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
 
-		// convert to blue image 
-		for (int y = 0; y < height; y++) 
-		{ 
-			for (int x = 0; x < width; x++) 
-			{ 
+		for (int y = 0; y < height; y++) { 
+			for (int x = 0; x < width; x++){ 
 				int p = img.getRGB(x,y); 
 
 				int b = p&0xff; 

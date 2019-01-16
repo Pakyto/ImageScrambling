@@ -1,5 +1,7 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,133 +9,163 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 public class DecryptionSteps {
 
-	private BufferedImage[][] imgKey = Keys.imageKey;
-	private static BufferedImage img ;
-
+	private static BufferedImage img;
 
 	public static void separateImage() throws IOException{
 
 		img = ImageIO.read(new File("Decrypt/KEY.jpg"));
 
 		//Crop imageKey into 3 images
-		
+
 		if(Keys.splitMode==0){ //Horizontal split Mode
-
 			int width = img.getWidth()/3;
-
 			BufferedImage img1 = new BufferedImage(width, img.getHeight(), BufferedImage.TYPE_INT_RGB);
-
 			img1.createGraphics().drawImage(img, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img1.jpg"));
-
-
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayRed.jpg"));
 			BufferedImage crop = img.getSubimage(width, 0, width, img.getHeight());
-
 			img1.createGraphics().drawImage(crop, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img2.jpg"));
-
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayGreen.jpg"));
 			BufferedImage crop2 = img.getSubimage(width+width, 0, width, img.getHeight());
-
 			img1.createGraphics().drawImage(crop2, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img3.jpg"));
-
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayBlue.jpg"));
 
 		}else{ //Vertical mode
 			int height = img.getHeight()/3;
-
 			BufferedImage img1 = new BufferedImage(img.getWidth(), height, BufferedImage.TYPE_INT_RGB);
-
 			img1.createGraphics().drawImage(img, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img1.jpg"));
-
-
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayRed.jpg"));
 			BufferedImage crop = img.getSubimage(0, height, img.getWidth(), height);
-
 			img1.createGraphics().drawImage(crop, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img2.jpg"));
-
-
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayGreen.jpg"));
 			BufferedImage crop2 = img.getSubimage(0, height+height, img.getWidth(), height);
-
 			img1.createGraphics().drawImage(crop2, 0, 0, null);
-
-			ImageIO.write(img1, "jpeg", new File("Decrypt/img3.jpg"));
+			ImageIO.write(img1, "jpeg", new File("Decrypt/grayBlue.jpg"));
 		}
 	}
 
 
-	public static void gray2Ycbr() throws IOException {
+	public static void gray2Ycbr(File input) throws IOException {
 
-		System.out.println("widthhhh "+Keys.width);
-
-		int totalWidth = Keys.width;
-		int totalHeight = Keys.height;
-		int cols = Keys.cols;
-		int rows = Keys.rows;
-		int type = Keys.type;
-
-		File result = null;
-
+		img = ImageIO.read(input);
+		
 		//get image width and height
 		int width = img.getWidth();
 		int height = img.getHeight();
 
+		BufferedImage rgb = img;
+		
+		Color myWhite = new Color(255, 255, 255);
+		int r = myWhite.getRGB();
+		
+		for (int x = 0; x < width; x++) { 
+			for (int y = 0; y < height; y++){ 
+								
+				int p = img.getRGB(x, y);
 
+				
+				int a = (p>>24)&0xff;
+				int red = (p>>16)&0xff;
+
+				p = (a<<24) | (red<<16) | (0<<8) | 0;
+				rgb.setRGB(x,y,p);
+
+				/*
+				int y = p&0xff;
+				int u = (p>>8)&0xff;
+				int v = (p>>16)&0xff; 
+
+				
+				int Y = (int) (y + 1.140f * v);
+				int Cb=(int)(y - 0.394f * u - 0.581f * v);
+				int Cr =(int)(y + 2.028f * u);
+				*/
+			
+			} 
+		} 
+		
+		try {
+			String color = input.getName();
+			System.out.println("colorrr "+color);
+			if(color.contains("blue")){
+				input = new File("Decrypt/blueYCBR.jpg");
+				ImageIO.write(rgb,"jpg", input);
+			}else if(color.contains("red")){
+				input = new File("Decrypt/redYCBR.jpg");
+				ImageIO.write(rgb,"jpg", input);
+			}else if(color.contains("green")){
+				input = new File("Decrypt/greenYCBR.jpg");
+				ImageIO.write(rgb,"jpg", input);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		/*
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); 
+
+		System.out.println("inputt "+input.getName());
+        byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+
+        Mat mat = new Mat(height,width, CvType.CV_8UC1);		
+        mat.put(0, 0, data);
+        */
+        
+        //Mat destination = new Mat(); 
+
+		//Imgproc.cvtColor(source, destination, Imgproc.COLOR_GRAY2RGB); 
+		
+		//Imgcodecs.imwrite("Decrypt/test.jpg", destination); 
+		 
+
+
+		/*
 		//convert to ycbr
 		for(int y = 0; y < height; y++){
 			for(int x = 0; x < width; x++){
-				int p = img.getRGB(x,y);
+				
+				int grey = img.getRGB(x, y); 
+               
+				int rgb = grey << 16 | grey << 8 | grey;
+				
+				ycb.setRGB(x, y, rgb);
 
-				int a = (p>>24)&0xff;
-				int r = (p>>16)&0xff;
-				int g = (p>>8)&0xff;
-				int b = p&0xff;
-
-				//calculate average
-				int avg = (r+g+b)/3;
-
-				//replace RGB value with avg
-				p = (a<<24) | (avg<<16) | (avg<<8) | avg;
-
-				img.setRGB(x, y, p);
 			}
 		}
 
-		//write image
-		try{
-			result = new File("img/DecrGrayToYcbr.jpg");
-			ImageIO.write(img, "jpg", result);
-		}catch(IOException e){
-			System.out.println(e);
-		}
 
 
-
-		//return result;
-
-		/*
-		BufferedImage combineImage = new BufferedImage(totalWidth, totalHeight, type);
-		int stackWidth = 0;
-		int stackHeight = 0;
-		for (int i = 0; i <= cols; i++) {
-			for (int j = 0; j <= rows; j++) {
-				combineImage.createGraphics().drawImage(imageRejoined[i][j], stackWidth, stackHeight, null);
-				stackHeight += imageRejoined[i][j].getHeight();
+		try {
+			String color = input.getName();
+			System.out.println("colorrr "+color);
+			if(color.contains("Blue")){
+				input = new File("Decrypt/blueYCBR.jpg");
+				ImageIO.write(ycb,"jpg", input);
+			}else if(color.contains("Red")){
+				input = new File("Decrypt/redYCBR.jpg");
+				ImageIO.write(ycb,"jpg", input);
+			}else if(color.contains("Green")){
+				input = new File("Decrypt/greenYCBR.jpg");
+				ImageIO.write(ycb,"jpg", input);
 			}
-			stackWidth += imageRejoined[i][0].getWidth();
-			stackHeight = 0;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		ImageIO.write(combineImage, "jpg", new File("img/KEY.jpg"));
-		System.out.println("Image rejoin done.");
-		 */
+		
+		*/
+		
+		
 
 	}
 }

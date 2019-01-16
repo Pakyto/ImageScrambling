@@ -26,5 +26,9 @@ public class Runner {
 		BlockScrambling.join();
 		
 		DecryptionSteps.separateImage();
+		DecryptionSteps.gray2Ycbr(new File("img/redYCBR.jpg"));
+		DecryptionSteps.gray2Ycbr(new File("img/greenYCBR.jpg"));
+		DecryptionSteps.gray2Ycbr(new File("img/blueYCBR.jpg"));
+
 	}
 }
