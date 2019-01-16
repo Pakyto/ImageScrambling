@@ -5,7 +5,7 @@ public class Runner {
 
 	public static void main(String[] args) throws IOException {
 
-		File input = new File("img/ucid.jpg");
+		File input = new File("img/ucid.tif");
 		
 		File out = EncryptionSteps.initialize(input);
 		File red = EncryptionSteps.extractRed(out);
@@ -20,10 +20,11 @@ public class Runner {
 		File output = EncryptionSteps.convertToGray(final_image);
 		
 		new File("split").mkdir();
-		int blockSize = 8;
+		new File("Decrypt").mkdir();
+		int blockSize = 16;
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 		
-		DecryptionSteps.gray2Ycbr();
+		DecryptionSteps.separateImage();
 	}
 }

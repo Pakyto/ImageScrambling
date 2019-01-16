@@ -1,3 +1,4 @@
+import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -184,10 +185,10 @@ public class EncryptionSteps {
 		int heightImg1 = img1.getHeight();
 
 		Random rand=new Random();
-		int x = rand.nextInt(2);
-		System.out.println(x);
-
-		if(x == 0){
+		Keys.splitMode = rand.nextInt(2);
+		System.out.println(Keys.splitMode);
+		
+		if(Keys.splitMode == 0){
 			// horizontally
 			System.out.println("HORIZONTALLY");
 			BufferedImage imgH = new BufferedImage(

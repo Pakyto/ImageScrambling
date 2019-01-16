@@ -37,6 +37,7 @@ public class BlockScrambling {
 		totalCols = colsOfSquare;    
 		totalRows = rowsOfSquare;
 
+		System.out.println("cols "+totalCols+ " rows "+totalRows);
 
 		/**
 		 *  Regular square image chunks crop and output.
@@ -44,6 +45,7 @@ public class BlockScrambling {
 		BufferedImage imgs[] = new BufferedImage[squaresCount];
 		int count = 0;
 		System.out.println("Splitting image....");
+		
 		for (int x = 0; x < colsOfSquare; x++) {
 			for (int y = 0; y < rowsOfSquare; y++) {
 				//Initialize the image array with image chunks
@@ -208,26 +210,29 @@ public class BlockScrambling {
 		 *  Assign image chunks from 2d array to original one image.
 		 */
 		
-		/*Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
+		//Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
 		Keys.imageKey = img;
 		Keys.width = w;
 		Keys.height = h;
 		Keys.cols = cols;
-		Keys.rows = rows;*/
+		Keys.rows = rows;
 
-		BufferedImage combineImage = new BufferedImage(w, h, type);
+		System.out.println("Writeee "+Keys.width);
+
+		
+		BufferedImage combineImage = new BufferedImage(Keys.width, Keys.height, type);
 		int stackWidth = 0;
 		int stackHeight = 0;
-		for (int i = 0; i <= cols; i++) {
-			for (int j = 0; j <= rows; j++) {
-				combineImage.createGraphics().drawImage(img[i][j], stackWidth, stackHeight, null);
-				stackHeight += img[i][j].getHeight();
+		for (int i = 0; i <= Keys.cols; i++) {
+			for (int j = 0; j <= Keys.rows; j++) {
+				combineImage.createGraphics().drawImage(Keys.imageKey[i][j], stackWidth, stackHeight, null);
+				stackHeight += Keys.imageKey[i][j].getHeight();
 			}
-			stackWidth += img[i][0].getWidth();
+			stackWidth += Keys.imageKey[i][0].getWidth();
 			stackHeight = 0;
 		}
 
-		ImageIO.write(combineImage, "jpg", new File("img/KEY.jpg"));
+		ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
 		System.out.println("Image REEEjoin done.");
 	}
 }
