@@ -14,7 +14,7 @@ public class Keys {
 	volatile static YCbCr[][] listValueYCbCrRed;       //Lista dei valori YCbCr del rosso
 	volatile static YCbCr[][] listValueYCbCrGreen; 	   //Lista dei valori YCbCr del verde
 	volatile static YCbCr[][] listValueYCbCrBlue;	   //Lista dei valori YCbCr del blu
-
+	
 	static void initializeRed(){
 		listValueYCbCrRed = new YCbCr[height][width];
 	}
@@ -26,6 +26,8 @@ public class Keys {
 	static void initializeBlue(){
 		listValueYCbCrBlue = new YCbCr[height][width];
 	}
+	
+	
 	
 	static void addRed(int j, int i,YCbCr value){
 		listValueYCbCrRed[j][i] = value;

@@ -167,7 +167,7 @@ public class BlockScrambling {
 			}
 		}
 				
-		writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
+		//writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
 		
 		/*SHUFFLING BLOCCHI*/
 		for(int i=0; i<imageChunks.length; i++){
@@ -205,10 +205,9 @@ public class BlockScrambling {
 		FileUtils.cleanDirectory(new File("split")); 
 	}
 	
+	/*
 	public static void writeKey(BufferedImage[][] img, int w, int h, int type, int cols, int rows) throws IOException {
-		/**
-		 *  Assign image chunks from 2d array to original one image.
-		 */
+		
 		
 		//Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
 		Keys.imageKey = img;
@@ -234,5 +233,6 @@ public class BlockScrambling {
 
 		ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
 		System.out.println("Image REEEjoin done.");
-	}
+	}*/
+	
 }

@@ -2,16 +2,22 @@ import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Random;
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageDecoder;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
 import javax.media.jai.JAI;
 
 public class EncryptionSteps {
@@ -60,7 +66,9 @@ public class EncryptionSteps {
 		//write image
 		try{
 			f = new File("img/blue.jpg");
-			ImageIO.write(img, "jpg", f);
+			
+			writeImage(f, img);
+			//ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -88,7 +96,9 @@ public class EncryptionSteps {
 		//write image
 		try{
 			f = new File("img/green.jpg");
-			ImageIO.write(img, "jpg", f);
+			writeImage(f, img);
+
+			//ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -116,7 +126,9 @@ public class EncryptionSteps {
 		//write image
 		try{
 			f = new File("img/red.jpg");
-			ImageIO.write(img, "jpg", f);
+			writeImage(f, img);
+
+			//ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -134,7 +146,7 @@ public class EncryptionSteps {
 		BufferedImage ycb =  new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
 
 		//Inizializzazioni delle matrici contenente i valori YCbCr per ogni colore
-		
+
 		if(input.getName().contains("red")){
 			Keys.width = width;
 			Keys.height = height;
@@ -148,56 +160,62 @@ public class EncryptionSteps {
 			Keys.height = height;
 			Keys.initializeBlue();
 		}
-			
+
 		for (int y = 0; y < height; y++) { 
 			for (int x = 0; x < width; x++){ 
 				int p = img.getRGB(x,y); 
-				
+
 				int a = (p>>24)&0xff; 
 				int b = p&0xff; 
 				int g = (p>>8)&0xff; 
 				int r = (p>>16)&0xff; 
-				
-				
+
+
 				int Y = (int)(0.299*r+0.587*g+0.114*b);
 				int Cb=(int)(-0.169*r - 0.331*g + 0.499*b)+128;
 				int Cr =(int)(0.499*r-0.418*g-0.0813*b)+128;
-				
+
 				//int Y = (int)(0.299*r+0.587*g+0.114*b);
 				//int Cb=(int)(-0.169*r - 0.331*g + 0.500*b)+128;
 				//int Cr =(int)(0.500*r-0.419*g-0.081*b)+128;
-				
+
 				YCbCr value = new YCbCr(Y, Cb, Cr,a);
-				
+
 				//Vengono memorizzati i valori di YCbCr per ogni colore
 				if(input.getName().contains("red")){
 					Keys.addRed(y,x,value);
 					//System.out.println("dsadad "+Keys.listValueYCbCrRed[y][x].toString());
-					
+
 				}else if(input.getName().contains("green")){
 					Keys.addGreen(y,x,value);
 				}else if(input.getName().contains("blue")){
 					Keys.addBlue(y,x,value);
 				}
-				
-				
+
+
 				int val = (Y<<16) | (Cb<<8) | Cr;
 				ycb.setRGB(x,y,val);
 			} 
 		}
-		
+
 
 		try {
 			String color = input.getName();
 			if(color.contains("blue")){
 				input = new File("img/blueYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
+				writeImage(input, ycb);
+
+				//ImageIO.write(ycb,"jpg", input);
 			}else if(color.contains("red")){
 				input = new File("img/redYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
+				writeImage(input, ycb);
+
+				//ImageIO.write(ycb,"jpg", input);
 			}else if(color.contains("green")){
 				input = new File("img/greenYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
+				writeImage(input, ycb);
+
+				//ImageIO.write(ycb,"jpg", input);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -221,7 +239,7 @@ public class EncryptionSteps {
 		Random rand=new Random();
 		Keys.splitMode = rand.nextInt(2);
 		System.out.println(Keys.splitMode);
-		
+
 		if(Keys.splitMode == 0){
 			// horizontally
 			System.out.println("HORIZONTALLY");
@@ -237,7 +255,11 @@ public class EncryptionSteps {
 			imgH.createGraphics().drawImage(img3, widthImg1+widthImg1, 0, null); // here width is mentioned as width of
 
 			final_image = new File("img/Final.jpg"); //png can also be used here
-			ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
+			//ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"			
+			writeImage(final_image, imgH);
+			//ImageIO.write(imgH, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
+			writeImage(new File("Decrypt/KEY.jpg"), imgH);
+
 		}else{
 			//Vertically
 			System.out.println("VERTICALLY");
@@ -253,7 +275,11 @@ public class EncryptionSteps {
 			imgV.createGraphics().drawImage(img3, 0, heightImg1+heightImg1, null); // here width is mentioned as width of
 
 			final_image = new File("img/Final.jpg"); //png can also be used here
-			ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
+			//ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
+			writeImage(final_image, imgV);
+			//ImageIO.write(imgV, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
+			writeImage(new File("Decrypt/KEY.jpg"), imgV);
+
 		}
 
 		return final_image;
@@ -294,10 +320,30 @@ public class EncryptionSteps {
 		}catch(IOException e){
 			System.out.println(e);
 		}
-		
+
 		Files.deleteIfExists(Paths.get("img/out.jpg"));
 
 		return result;
+	}
+
+	/**
+	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
+	 * @param file
+	 * @param img
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void writeImage(File file,BufferedImage img) throws FileNotFoundException, IOException{
+		FileImageOutputStream output = new FileImageOutputStream(file);
+
+		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
+		ImageWriter writer = iter.next();
+		ImageWriteParam iwp = writer.getDefaultWriteParam();
+		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		iwp.setCompressionQuality(1.0f);
+		writer.setOutput(output);
+		writer.write(null, new IIOImage(img ,null,null),iwp);
+		writer.dispose();
 	}
 
 }
