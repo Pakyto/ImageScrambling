@@ -119,7 +119,6 @@ public class DecryptionSteps {
 
 		try {
 			String color = input.getName();
-			System.out.println("colorrr "+color);
 			if(color.contains("blue")){
 				input = new File("Decrypt/blue.jpg");
 				writeImage(input, rgb);

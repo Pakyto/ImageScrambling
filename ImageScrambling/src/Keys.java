@@ -10,7 +10,8 @@ public class Keys {
 	volatile static int cols;
 	volatile static int rows;
 	volatile static int splitMode;
-	
+	volatile static int inversionMode;
+	volatile static int angleRotation;
 	volatile static YCbCr[][] listValueYCbCrRed;       //Lista dei valori YCbCr del rosso
 	volatile static YCbCr[][] listValueYCbCrGreen; 	   //Lista dei valori YCbCr del verde
 	volatile static YCbCr[][] listValueYCbCrBlue;	   //Lista dei valori YCbCr del blu

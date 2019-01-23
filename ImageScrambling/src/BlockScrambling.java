@@ -1,4 +1,6 @@
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -21,7 +24,7 @@ public class BlockScrambling {
 	public static void splitImage(File input,int blockSize)throws IOException{
 
 		BufferedImage originalImg = ImageIO.read(input);
-		
+
 		int squareLength = blockSize;
 
 		int originalWidth = originalImg.getWidth();
@@ -45,7 +48,7 @@ public class BlockScrambling {
 		BufferedImage imgs[] = new BufferedImage[squaresCount];
 		int count = 0;
 		System.out.println("Splitting image....");
-		
+
 		for (int x = 0; x < colsOfSquare; x++) {
 			for (int y = 0; y < rowsOfSquare; y++) {
 				//Initialize the image array with image chunks
@@ -166,10 +169,11 @@ public class BlockScrambling {
 				imageChunks[colNum][rowNum] = image;
 			}
 		}
-				
+
 		//writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
-		
+
 		/*SHUFFLING BLOCCHI*/
+		
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
 				int i1 = (int) (Math.random()*imageChunks.length);
@@ -190,8 +194,45 @@ public class BlockScrambling {
 		BufferedImage combineImage = new BufferedImage(totalWidth, totalHeight, type);
 		int stackWidth = 0;
 		int stackHeight = 0;
+
 		for (int i = 0; i <= cols; i++) {
 			for (int j = 0; j <= rows; j++) {
+				Keys.inversionMode = new Random().nextInt(2);
+				Keys.angleRotation = new Random().nextInt(3);
+
+				Graphics2D g = imageChunks[i][j].createGraphics();
+				int w = imageChunks[i][j].getWidth();  
+				int h = imageChunks[i][j].getHeight();
+
+				if(Keys.inversionMode==0){
+					//Block inversion horizontally 
+					System.out.println("horizont");
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);  
+				}else{
+					//Block inversion vertically 
+					System.out.println("vertical");
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);  
+				}
+				switch(Keys.angleRotation){
+					case 0:{
+						System.out.println("90");
+						g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
+						break;
+					}
+					case 1:{
+						System.out.println("180");
+						g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
+						break;
+					}
+					case 2:{
+						System.out.println("270");
+						g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
+						break;
+					}
+				}
+				g.drawImage(imageChunks[i][j], null, 0, 0);  
+				g.dispose();
+
 				combineImage.createGraphics().drawImage(imageChunks[i][j], stackWidth, stackHeight, null);
 				stackHeight += imageChunks[i][j].getHeight();
 			}
@@ -199,16 +240,17 @@ public class BlockScrambling {
 			stackHeight = 0;
 		}
 
+
 		ImageIO.write(combineImage, "jpg", new File("img/join.jpg"));
 		System.out.println("Image rejoin done.");
 
 		FileUtils.cleanDirectory(new File("split")); 
 	}
-	
+
 	/*
 	public static void writeKey(BufferedImage[][] img, int w, int h, int type, int cols, int rows) throws IOException {
-		
-		
+
+
 		//Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
 		Keys.imageKey = img;
 		Keys.width = w;
@@ -218,7 +260,7 @@ public class BlockScrambling {
 
 		System.out.println("Writeee "+Keys.width);
 
-		
+
 		BufferedImage combineImage = new BufferedImage(Keys.width, Keys.height, type);
 		int stackWidth = 0;
 		int stackHeight = 0;
@@ -234,5 +276,5 @@ public class BlockScrambling {
 		ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
 		System.out.println("Image REEEjoin done.");
 	}*/
-	
+
 }

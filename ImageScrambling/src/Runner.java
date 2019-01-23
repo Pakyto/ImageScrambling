@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+
 public class Runner {
 
 	public static void main(String[] args) throws IOException {
@@ -19,9 +21,11 @@ public class Runner {
 		File final_image = EncryptionSteps.concatenateImage(ycbr_red, ycbr_green, ycbc_blue);
 		File output = EncryptionSteps.convertToGray(final_image);
 		
+		FileUtils.cleanDirectory(new File("split")); 
+		
 		new File("split").mkdir();
 		new File("Decrypt").mkdir();
-		int blockSize = 16;
+		int blockSize = 8;         							//Block size
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 		
