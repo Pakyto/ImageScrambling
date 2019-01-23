@@ -133,22 +133,59 @@ public class EncryptionSteps {
 
 		BufferedImage ycb =  new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
 
+		//Inizializzazioni delle matrici contenente i valori YCbCr per ogni colore
+		
+		if(input.getName().contains("red")){
+			Keys.width = width;
+			Keys.height = height;
+			Keys.initializeRed();
+		}else if(input.getName().contains("green")){
+			Keys.width = width;
+			Keys.height = height;
+			Keys.initializeGreen();
+		}else if(input.getName().contains("blue")){
+			Keys.width = width;
+			Keys.height = height;
+			Keys.initializeBlue();
+		}
+			
 		for (int y = 0; y < height; y++) { 
 			for (int x = 0; x < width; x++){ 
 				int p = img.getRGB(x,y); 
-
+				
+				int a = (p>>24)&0xff; 
 				int b = p&0xff; 
 				int g = (p>>8)&0xff; 
 				int r = (p>>16)&0xff; 
-
+				
+				
 				int Y = (int)(0.299*r+0.587*g+0.114*b);
-				int Cb=(int)(-0.169*r - 0.331*g + 0.500*b)+128;
-				int Cr =(int)(0.500*r-0.419*g-0.081*b)+128;
-
+				int Cb=(int)(-0.169*r - 0.331*g + 0.499*b)+128;
+				int Cr =(int)(0.499*r-0.418*g-0.0813*b)+128;
+				
+				//int Y = (int)(0.299*r+0.587*g+0.114*b);
+				//int Cb=(int)(-0.169*r - 0.331*g + 0.500*b)+128;
+				//int Cr =(int)(0.500*r-0.419*g-0.081*b)+128;
+				
+				YCbCr value = new YCbCr(Y, Cb, Cr,a);
+				
+				//Vengono memorizzati i valori di YCbCr per ogni colore
+				if(input.getName().contains("red")){
+					Keys.addRed(y,x,value);
+					//System.out.println("dsadad "+Keys.listValueYCbCrRed[y][x].toString());
+					
+				}else if(input.getName().contains("green")){
+					Keys.addGreen(y,x,value);
+				}else if(input.getName().contains("blue")){
+					Keys.addBlue(y,x,value);
+				}
+				
+				
 				int val = (Y<<16) | (Cb<<8) | Cr;
 				ycb.setRGB(x,y,val);
 			} 
-		} 
+		}
+		
 
 		try {
 			String color = input.getName();

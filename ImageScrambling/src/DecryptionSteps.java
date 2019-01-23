@@ -49,42 +49,57 @@ public class DecryptionSteps {
 	public static void gray2Ycbr(File input) throws IOException {
 
 		img = ImageIO.read(input);
-		
+
 		//get image width and height
 		int width = img.getWidth();
 		int height = img.getHeight();
 
-		BufferedImage rgb = img;
-		
-		Color myWhite = new Color(255, 255, 255);
-		int r = myWhite.getRGB();
-		
+		BufferedImage rgb = ImageIO.read(input);
+
 		for (int x = 0; x < width; x++) { 
 			for (int y = 0; y < height; y++){ 
-								
-				int p = img.getRGB(x, y);
 
+				int red,green,blue;
 				
-				int a = (p>>24)&0xff;
-				int red = (p>>16)&0xff;
-
-				p = (a<<24) | (red<<16) | (0<<8) | 0;
-				rgb.setRGB(x,y,p);
-
-				/*
-				int y = p&0xff;
-				int u = (p>>8)&0xff;
-				int v = (p>>16)&0xff; 
-
+				int Y=0,Cb=0,Cr=0,lum = 0;
+	    
+				//Si prelevano i valori YCbCr per ogni colore per ottenere i valori Y Cb, Cr e la luminanza per ogni colore
 				
-				int Y = (int) (y + 1.140f * v);
-				int Cb=(int)(y - 0.394f * u - 0.581f * v);
-				int Cr =(int)(y + 2.028f * u);
-				*/
-			
+	            if(input.getName().contains("red")){
+	            	YCbCr val = Keys.listValueYCbCrRed[y][x];
+					Y = val.getY();
+					Cb = val.getCb();
+					Cr = val.getCr();
+					lum = val.getLum();
+									
+				}else if(input.getName().contains("green")){
+					YCbCr val = Keys.listValueYCbCrGreen[y][x];
+					Y = val.getY();
+					Cb = val.getCb();
+					Cr = val.getCr();
+					lum = val.getLum();
+					
+				}else if(input.getName().contains("blue")){
+					YCbCr val = Keys.listValueYCbCrBlue[y][x];
+					Y = val.getY();
+					Cb = val.getCb();
+					Cr = val.getCr();
+					lum = val.getLum();
+				}
+	            
+	            //Si effettua il clamping per ottenere valori che sono compresi tra 0 e 255
+	            red = Math.max(0, Math.min(255,(int)(Y + 1.402*(Cr - 128))));
+	            green = Math.max(0, Math.min(255,(int)(Y - 0.344*(Cb - 128)-0.714*(Cr - 128))));
+	            blue = Math.max(0, Math.min(255,(int)(Y + 1.772*(Cb - 128))));
+	        	
+
+				int val = (lum<<24)|(red<<16) | (green<<8) | blue;
+				
+				rgb.setRGB(x, y, val);
+
 			} 
 		} 
-		
+
 		try {
 			String color = input.getName();
 			System.out.println("colorrr "+color);
@@ -102,64 +117,9 @@ public class DecryptionSteps {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+
+
 		
-		
-		
-		/*
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); 
-
-		System.out.println("inputt "+input.getName());
-        byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-
-        Mat mat = new Mat(height,width, CvType.CV_8UC1);		
-        mat.put(0, 0, data);
-        */
-        
-        //Mat destination = new Mat(); 
-
-		//Imgproc.cvtColor(source, destination, Imgproc.COLOR_GRAY2RGB); 
-		
-		//Imgcodecs.imwrite("Decrypt/test.jpg", destination); 
-		 
-
-
-		/*
-		//convert to ycbr
-		for(int y = 0; y < height; y++){
-			for(int x = 0; x < width; x++){
-				
-				int grey = img.getRGB(x, y); 
-               
-				int rgb = grey << 16 | grey << 8 | grey;
-				
-				ycb.setRGB(x, y, rgb);
-
-			}
-		}
-
-
-
-		try {
-			String color = input.getName();
-			System.out.println("colorrr "+color);
-			if(color.contains("Blue")){
-				input = new File("Decrypt/blueYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
-			}else if(color.contains("Red")){
-				input = new File("Decrypt/redYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
-			}else if(color.contains("Green")){
-				input = new File("Decrypt/greenYCBR.jpg");
-				ImageIO.write(ycb,"jpg", input);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		*/
-		
-		
-
 	}
 }
