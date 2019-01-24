@@ -4,16 +4,22 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -171,7 +177,7 @@ public class BlockScrambling {
 			}
 		}
 
-		//writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
+		writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
 
 		/*SHUFFLING BLOCCHI*/
 
@@ -286,9 +292,9 @@ public class BlockScrambling {
 					System.out.println("positive");
 				}
 
+				/*Shuffling color components for each block*/
 				
 				Keys.randColor = new Random().nextInt(6);  
-				/*Shuffling color components for each block*/
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
 						int p = imageChunks[i][j].getRGB(x, y);	
@@ -299,8 +305,6 @@ public class BlockScrambling {
 						gr = (p>>8)&0xff;
 						b = p&0xff;
 						
-						
-						//System.out.println("col"+randColor);
 						switch(Keys.randColor){
 						case 0:{
 							p = (a<<24) | (r<<16) | (gr<<8) | b;
@@ -327,22 +331,16 @@ public class BlockScrambling {
 						}
 						case 5:{
 							p = (a<<24) | (gr<<8) | b | (r<<16);
-
 							break;
 						}
 						}
 						
-
-						//p = (a<<24) | (r<<16) | (gr<<8) | b;
-
 						imageChunks[i][j].setRGB(x, y, p);
 
 
 					}
 				}
 				
-				
-
 				combineImage.createGraphics().drawImage(imageChunks[i][j], stackWidth, stackHeight, null);
 				stackHeight += imageChunks[i][j].getHeight();
 			}
@@ -357,7 +355,7 @@ public class BlockScrambling {
 		FileUtils.cleanDirectory(new File("split")); 
 	}
 
-	/*
+	
 	public static void writeKey(BufferedImage[][] img, int w, int h, int type, int cols, int rows) throws IOException {
 
 
@@ -383,8 +381,29 @@ public class BlockScrambling {
 			stackHeight = 0;
 		}
 
-		ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
+		//ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
+		writeImage(new File("Decrypt/KEY.jpg"), combineImage);
 		System.out.println("Image REEEjoin done.");
-	}*/
+	}
+	
+	/**
+	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
+	 * @param file
+	 * @param img
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void writeImage(File file,BufferedImage img) throws FileNotFoundException, IOException{
+		FileImageOutputStream output = new FileImageOutputStream(file);
+
+		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
+		ImageWriter writer = iter.next();
+		ImageWriteParam iwp = writer.getDefaultWriteParam();
+		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		iwp.setCompressionQuality(1.0f);
+		writer.setOutput(output);
+		writer.write(null, new IIOImage(img ,null,null),iwp);
+		writer.dispose();
+	}
 
 }

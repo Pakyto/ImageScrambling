@@ -258,7 +258,7 @@ public class EncryptionSteps {
 			//ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"			
 			writeImage(final_image, imgH);
 			//ImageIO.write(imgH, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
-			writeImage(new File("Decrypt/KEY.jpg"), imgH);
+			//writeImage(new File("Decrypt/KEY.jpg"), imgH);
 
 		}else{
 			//Vertically
@@ -278,7 +278,7 @@ public class EncryptionSteps {
 			//ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
 			writeImage(final_image, imgV);
 			//ImageIO.write(imgV, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
-			writeImage(new File("Decrypt/KEY.jpg"), imgV);
+			//writeImage(new File("Decrypt/KEY.jpg"), imgV);
 
 		}
 
@@ -293,6 +293,10 @@ public class EncryptionSteps {
 		int width = img.getWidth();
 		int height = img.getHeight();
 
+		Keys.height = height;
+		Keys.width = width;
+		Keys.initializeRGB();
+		
 		//convert to grayscale
 		for(int y = 0; y < height; y++){
 			for(int x = 0; x < width; x++){
@@ -303,6 +307,9 @@ public class EncryptionSteps {
 				int g = (p>>8)&0xff;
 				int b = p&0xff;
 
+				RGB rgb = new RGB(r, g, b, a);
+				Keys.addRGB(y, x, rgb);    //Vengono memorizzati i valori RGB delle immagine YCbCr
+				
 				//calculate average
 				int avg = (r+g+b)/3;
 
@@ -316,7 +323,8 @@ public class EncryptionSteps {
 		//write image
 		try{
 			result = new File("img/grayscale.jpg");
-			ImageIO.write(img, "jpg", result);
+			//ImageIO.write(img, "jpg", result);
+			writeImage(result, img);
 		}catch(IOException e){
 			System.out.println(e);
 		}

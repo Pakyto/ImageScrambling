@@ -20,10 +20,37 @@ public class DecryptionSteps {
 
 	private static BufferedImage img;
 
+	public static void gray2YCbCr() throws IOException{
+		img = ImageIO.read(new File("Decrypt/KEY.jpg"));
+		
+		int width = img.getWidth();
+		int height = img.getHeight();
+		
+		for(int y = 0; y < height; y++){
+			for(int x = 0; x < width; x++){
+				int p;
+				
+				RGB rgb = Keys.listValueRGB[y][x];
+				
+				int a = rgb.getLum();
+				int r = rgb.getR();
+				int g = rgb.getG();
+				int b = rgb.getB();
+
+				p = (a<<24) | (r<<16) | (g<<8) | b;
+
+				img.setRGB(x, y, p);
+			}
+		}
+		
+		writeImage(new File("Decrypt/YCbCr.jpg"), img);
+		
+		
+	}
 
 	public static void separateImage() throws IOException{
 
-		img = ImageIO.read(new File("Decrypt/KEY.jpg"));
+		img = ImageIO.read(new File("Decrypt/YCbCr.jpg"));
 
 		//Crop imageKey into 3 images
 
@@ -152,14 +179,6 @@ public class DecryptionSteps {
 			for(int x = 0; x < red.getWidth(); x++){
 
 				int rgb = (red.getRGB(x, y) & 0x00FF0000) | (green.getRGB(x, y) & 0x0000FF00) | (blue.getRGB(x, y) & 0x000000FF);
-
-				//int rd = (red.getRGB(x, y)>>16) & 0xFF;
-				//int gr = (green.getRGB(x, y)>>8) & 0xFF;
-				//int bl = (blue.getRGB(x, y)>>0) & 0xFF;
-
-				//int val = ((255 & 0xFF)<<24) |((rd & 0xFF)<<16) | ((gr & 0xFF)<<8) |((bl & 0xFF)<<0) ;
-				//base.setRGB(x, y, val);
-
 		        
 		        base.setRGB(x, y, (rgb | 0xFF000000));
 			}

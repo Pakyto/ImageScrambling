@@ -26,10 +26,11 @@ public class Runner {
 		FileUtils.cleanDirectory(new File("split")); 
 
 		new File("Decrypt").mkdir();
-		int blockSize = 8;         							//Block size
+		int blockSize = 16;         							//Block size
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 		
+		DecryptionSteps.gray2YCbCr();
 		DecryptionSteps.separateImage();
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/greenYCBR.jpg"));

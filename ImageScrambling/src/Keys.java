@@ -15,6 +15,7 @@ public class Keys {
 	volatile static int negativePositiveTranform;
 	volatile static int randColor;
 
+	volatile static RGB[][] listValueRGB;
 	volatile static YCbCr[][] listValueYCbCrRed;       //Lista dei valori YCbCr del rosso
 	volatile static YCbCr[][] listValueYCbCrGreen; 	   //Lista dei valori YCbCr del verde
 	volatile static YCbCr[][] listValueYCbCrBlue;	   //Lista dei valori YCbCr del blu
@@ -31,7 +32,13 @@ public class Keys {
 		listValueYCbCrBlue = new YCbCr[height][width];
 	}
 	
+	static void initializeRGB(){
+		listValueRGB = new RGB[height][width];
+	}
 	
+	static void addRGB(int j, int i,RGB value){
+		listValueRGB[j][i] = value;
+	}
 	
 	static void addRed(int j, int i,YCbCr value){
 		listValueYCbCrRed[j][i] = value;
