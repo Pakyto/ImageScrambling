@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -173,7 +174,6 @@ public class BlockScrambling {
 		//writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
 
 		/*SHUFFLING BLOCCHI*/
-		
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
 				int i1 = (int) (Math.random()*imageChunks.length);
@@ -195,15 +195,18 @@ public class BlockScrambling {
 		int stackWidth = 0;
 		int stackHeight = 0;
 
+		//Processing each block
 		for (int i = 0; i <= cols; i++) {
 			for (int j = 0; j <= rows; j++) {
 				Keys.inversionMode = new Random().nextInt(2);
 				Keys.angleRotation = new Random().nextInt(3);
+				Keys.negativePositiveTranform = new Random().nextInt(2);
 
 				Graphics2D g = imageChunks[i][j].createGraphics();
 				int w = imageChunks[i][j].getWidth();  
 				int h = imageChunks[i][j].getHeight();
 
+				
 				if(Keys.inversionMode==0){
 					//Block inversion horizontally 
 					System.out.println("horizont");
@@ -213,25 +216,50 @@ public class BlockScrambling {
 					System.out.println("vertical");
 					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);  
 				}
+				
 				switch(Keys.angleRotation){
-					case 0:{
-						System.out.println("90");
-						g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
-						break;
-					}
-					case 1:{
-						System.out.println("180");
-						g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
-						break;
-					}
-					case 2:{
-						System.out.println("270");
-						g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
-						break;
-					}
+				case 0:{
+					System.out.println("90");
+					g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
+					break;
+				}
+				case 1:{
+					System.out.println("180");
+					g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
+					break;
+				}
+				case 2:{
+					System.out.println("270");
+					g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
+					break;
+				}
 				}
 				g.drawImage(imageChunks[i][j], null, 0, 0);  
 				g.dispose();
+			
+				if(Keys.negativePositiveTranform == 1){
+					System.out.println("negative");
+					//Negative trasformation for each pixel of block
+					for(int y = 0; y < h; y++){
+						for(int x = 0; x < w; x++){
+							int p = imageChunks[i][j].getRGB(x, y);	
+							int a = (p>>24)&0xff;
+							int r = (p>>16)&0xff;
+							int gr = (p>>8)&0xff;
+							int b = p&0xff;
+							//subtract RGB from 255
+							r = 255 - r;
+							gr = 255 - gr;
+							b = 255 - b;
+							//set new RGB value
+							p = (a<<24) | (r<<16) | (gr<<8) | b;
+
+							imageChunks[i][j].setRGB(x, y, p);
+						}
+					}
+				}else{//Else positive trasformation is performed
+					System.out.println("positive");
+				}
 
 				combineImage.createGraphics().drawImage(imageChunks[i][j], stackWidth, stackHeight, null);
 				stackHeight += imageChunks[i][j].getHeight();
