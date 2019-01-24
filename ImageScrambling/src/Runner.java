@@ -21,9 +21,10 @@ public class Runner {
 		File final_image = EncryptionSteps.concatenateImage(ycbr_red, ycbr_green, ycbc_blue);
 		File output = EncryptionSteps.convertToGray(final_image);
 		
-		FileUtils.cleanDirectory(new File("split")); 
 		
 		new File("split").mkdir();
+		FileUtils.cleanDirectory(new File("split")); 
+
 		new File("Decrypt").mkdir();
 		int blockSize = 8;         							//Block size
 		BlockScrambling.splitImage(output,blockSize);

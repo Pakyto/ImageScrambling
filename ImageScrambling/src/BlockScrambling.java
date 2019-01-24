@@ -174,6 +174,7 @@ public class BlockScrambling {
 		//writeKey(imageChunks, totalWidth, totalHeight, type, cols, rows);
 
 		/*SHUFFLING BLOCCHI*/
+
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
 				int i1 = (int) (Math.random()*imageChunks.length);
@@ -198,48 +199,72 @@ public class BlockScrambling {
 		//Processing each block
 		for (int i = 0; i <= cols; i++) {
 			for (int j = 0; j <= rows; j++) {
-				Keys.inversionMode = new Random().nextInt(2);
-				Keys.angleRotation = new Random().nextInt(3);
+				Keys.inversionMode = new Random().nextInt(4);
+				Keys.angleRotation = new Random().nextInt(4);
 				Keys.negativePositiveTranform = new Random().nextInt(2);
 
 				Graphics2D g = imageChunks[i][j].createGraphics();
 				int w = imageChunks[i][j].getWidth();  
 				int h = imageChunks[i][j].getHeight();
 
-				
-				if(Keys.inversionMode==0){
+				//Inversion of each block
+				switch(Keys.inversionMode){
+				case 0:{
+					//No inversion
+					System.out.println("no inversion");
+					break;
+				}
+				case 1:{
 					//Block inversion horizontally 
 					System.out.println("horizont");
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);  
-				}else{
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);
+					break;
+				}
+				case 2:{
 					//Block inversion vertically 
 					System.out.println("vertical");
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);  
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);
 				}
-				
+				case 3:{
+					//Block inversion horizontally & vertically
+					System.out.println("horizont & vertical");
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);
+					break;
+				}
+				}
+
+				//Rotation of each block
 				switch(Keys.angleRotation){
 				case 0:{
+					System.out.println("0");
+					//No rotation
+					break;
+				}
+				case 1:{
 					System.out.println("90");
 					g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
 					break;
 				}
-				case 1:{
+				case 2:{
 					System.out.println("180");
 					g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
 					break;
 				}
-				case 2:{
+				case 3:{
 					System.out.println("270");
 					g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
 					break;
 				}
 				}
-				g.drawImage(imageChunks[i][j], null, 0, 0);  
+				g.drawImage(imageChunks[i][j], null, 0, 0);  	
 				g.dispose();
-			
+
+
+				//Negative trasformation for each pixel of block
+				
 				if(Keys.negativePositiveTranform == 1){
 					System.out.println("negative");
-					//Negative trasformation for each pixel of block
 					for(int y = 0; y < h; y++){
 						for(int x = 0; x < w; x++){
 							int p = imageChunks[i][j].getRGB(x, y);	
@@ -260,6 +285,63 @@ public class BlockScrambling {
 				}else{//Else positive trasformation is performed
 					System.out.println("positive");
 				}
+
+				
+				Keys.randColor = new Random().nextInt(6);
+				/*Shuffling color components for each block*/
+				for(int y = 0; y < h; y++){
+					for(int x = 0; x < w; x++){
+						int p = imageChunks[i][j].getRGB(x, y);	
+						int a = (p>>24)&0xff;
+
+						int r=0,gr=0,b=0;
+						r = (p>>16)&0xff;
+						gr = (p>>8)&0xff;
+						b = p&0xff;
+						
+						
+						//System.out.println("col"+randColor);
+						switch(Keys.randColor){
+						case 0:{
+							p = (a<<24) | (r<<16) | (gr<<8) | b;
+							break;
+						}
+						case 1:{
+							p = (a<<24) | (gr<<8) |(r<<16) | b;
+							break;
+						}
+						
+						case 2:{
+							p = (a<<24) | b |(r<<16) |(gr<<8);
+							break;
+						}
+						
+						case 3:{
+							p = (a<<24) | b | (gr<<8) |(r<<16);
+							break;
+						}
+						case 4:{
+							p = (a<<24) | (r<<16) | b | (gr<<8);
+							break;
+						
+						}
+						case 5:{
+							p = (a<<24) | (gr<<8) | b | (r<<16);
+
+							break;
+						}
+						}
+						
+
+						//p = (a<<24) | (r<<16) | (gr<<8) | b;
+
+						imageChunks[i][j].setRGB(x, y, p);
+
+
+					}
+				}
+				
+				
 
 				combineImage.createGraphics().drawImage(imageChunks[i][j], stackWidth, stackHeight, null);
 				stackHeight += imageChunks[i][j].getHeight();
