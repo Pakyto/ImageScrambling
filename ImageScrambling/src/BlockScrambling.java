@@ -287,7 +287,7 @@ public class BlockScrambling {
 				}
 
 				
-				Keys.randColor = new Random().nextInt(6); 
+				Keys.randColor = new Random().nextInt(6);  
 				/*Shuffling color components for each block*/
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
