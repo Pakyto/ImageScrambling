@@ -213,6 +213,33 @@ public class BlockScrambling {
 				int w = imageChunks[i][j].getWidth();  
 				int h = imageChunks[i][j].getHeight();
 
+				
+				//Rotation of each block
+				switch(Keys.angleRotation){
+				case 0:{
+					System.out.println("0");
+					//No rotation
+					break;
+				}
+				case 1:{
+					System.out.println("90");
+					g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
+					break;
+				}
+				case 2:{
+					System.out.println("180");
+					g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
+					break;
+				}
+				case 3:{
+					System.out.println("270");
+					g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
+					break;
+				}
+				}
+				g.drawImage(imageChunks[i][j], null, 0, 0);  	
+				g.dispose();
+
 				//Inversion of each block
 				switch(Keys.inversionMode){
 				case 0:{
@@ -239,32 +266,6 @@ public class BlockScrambling {
 					break;
 				}
 				}
-
-				//Rotation of each block
-				switch(Keys.angleRotation){
-				case 0:{
-					System.out.println("0");
-					//No rotation
-					break;
-				}
-				case 1:{
-					System.out.println("90");
-					g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
-					break;
-				}
-				case 2:{
-					System.out.println("180");
-					g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
-					break;
-				}
-				case 3:{
-					System.out.println("270");
-					g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
-					break;
-				}
-				}
-				g.drawImage(imageChunks[i][j], null, 0, 0);  	
-				g.dispose();
 
 
 				//Negative trasformation for each pixel of block
@@ -347,8 +348,9 @@ public class BlockScrambling {
 			stackWidth += imageChunks[i][0].getWidth();
 			stackHeight = 0;
 		}
+		
 
-
+		
 		ImageIO.write(combineImage, "jpg", new File("img/join.jpg"));
 		System.out.println("Image rejoin done.");
 
@@ -357,7 +359,6 @@ public class BlockScrambling {
 
 	
 	public static void writeKey(BufferedImage[][] img, int w, int h, int type, int cols, int rows) throws IOException {
-
 
 		//Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
 		Keys.imageKey = img;
@@ -381,10 +382,11 @@ public class BlockScrambling {
 			stackHeight = 0;
 		}
 
-		//ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
-		writeImage(new File("Decrypt/KEY.jpg"), combineImage);
+		ImageIO.write(combineImage, "jpg", new File("Decrypt/KEY.jpg"));
+		//writeImage(new File("Decrypt/KEY.jpg"), combineImage);
 		System.out.println("Image REEEjoin done.");
 	}
+	
 	
 	/**
 	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
@@ -393,6 +395,7 @@ public class BlockScrambling {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
+	/*
 	public static void writeImage(File file,BufferedImage img) throws FileNotFoundException, IOException{
 		FileImageOutputStream output = new FileImageOutputStream(file);
 
@@ -405,5 +408,5 @@ public class BlockScrambling {
 		writer.write(null, new IIOImage(img ,null,null),iwp);
 		writer.dispose();
 	}
-
+	*/
 }

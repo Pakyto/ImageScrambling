@@ -67,8 +67,8 @@ public class EncryptionSteps {
 		try{
 			f = new File("img/blue.jpg");
 			
-			writeImage(f, img);
-			//ImageIO.write(img, "jpg", f);
+			//writeImage(f, img);
+			ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -96,9 +96,9 @@ public class EncryptionSteps {
 		//write image
 		try{
 			f = new File("img/green.jpg");
-			writeImage(f, img);
+			//writeImage(f, img);
 
-			//ImageIO.write(img, "jpg", f);
+			ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -126,9 +126,9 @@ public class EncryptionSteps {
 		//write image
 		try{
 			f = new File("img/red.jpg");
-			writeImage(f, img);
+			//writeImage(f, img);
 
-			//ImageIO.write(img, "jpg", f);
+			ImageIO.write(img, "jpg", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -136,7 +136,7 @@ public class EncryptionSteps {
 
 	}
 
-	public static File rgb2ybcr(File input) throws IOException{
+	public static File rgb2ycbcr(File input) throws IOException{
 		BufferedImage img = null; 
 		img = ImageIO.read(input);
 		// get width and height 
@@ -203,19 +203,19 @@ public class EncryptionSteps {
 			String color = input.getName();
 			if(color.contains("blue")){
 				input = new File("img/blueYCBR.jpg");
-				writeImage(input, ycb);
+				//writeImage(input, ycb);
 
-				//ImageIO.write(ycb,"jpg", input);
+				ImageIO.write(ycb,"jpg", input);
 			}else if(color.contains("red")){
 				input = new File("img/redYCBR.jpg");
-				writeImage(input, ycb);
+				//writeImage(input, ycb);
 
-				//ImageIO.write(ycb,"jpg", input);
+				ImageIO.write(ycb,"jpg", input);
 			}else if(color.contains("green")){
 				input = new File("img/greenYCBR.jpg");
-				writeImage(input, ycb);
+				//writeImage(input, ycb);
 
-				//ImageIO.write(ycb,"jpg", input);
+				ImageIO.write(ycb,"jpg", input);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -255,9 +255,9 @@ public class EncryptionSteps {
 			imgH.createGraphics().drawImage(img3, widthImg1+widthImg1, 0, null); // here width is mentioned as width of
 
 			final_image = new File("img/Final.jpg"); //png can also be used here
-			//ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"			
-			writeImage(final_image, imgH);
-			//ImageIO.write(imgH, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
+			ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"			
+			//writeImage(final_image, imgH);
+			ImageIO.write(imgH, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
 			//writeImage(new File("Decrypt/KEY.jpg"), imgH);
 
 		}else{
@@ -275,9 +275,9 @@ public class EncryptionSteps {
 			imgV.createGraphics().drawImage(img3, 0, heightImg1+heightImg1, null); // here width is mentioned as width of
 
 			final_image = new File("img/Final.jpg"); //png can also be used here
-			//ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
-			writeImage(final_image, imgV);
-			//ImageIO.write(imgV, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
+			ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
+			//writeImage(final_image, imgV);
+			ImageIO.write(imgV, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
 			//writeImage(new File("Decrypt/KEY.jpg"), imgV);
 
 		}
@@ -323,8 +323,8 @@ public class EncryptionSteps {
 		//write image
 		try{
 			result = new File("img/grayscale.jpg");
-			//ImageIO.write(img, "jpg", result);
-			writeImage(result, img);
+			ImageIO.write(img, "jpg", result);
+			//writeImage(result, img);
 		}catch(IOException e){
 			System.out.println(e);
 		}
@@ -334,6 +334,7 @@ public class EncryptionSteps {
 		return result;
 	}
 
+	
 	/**
 	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
 	 * @param file
@@ -341,6 +342,7 @@ public class EncryptionSteps {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
+	/*
 	public static void writeImage(File file,BufferedImage img) throws FileNotFoundException, IOException{
 		FileImageOutputStream output = new FileImageOutputStream(file);
 
@@ -353,5 +355,5 @@ public class EncryptionSteps {
 		writer.write(null, new IIOImage(img ,null,null),iwp);
 		writer.dispose();
 	}
-
+	*/
 }
