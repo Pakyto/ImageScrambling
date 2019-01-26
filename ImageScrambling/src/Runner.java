@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
@@ -61,17 +62,16 @@ public class Runner {
 		FileUtils.cleanDirectory(new File("split")); 
 
 		new File("Decrypt").mkdir();
-		int blockSize = 16;         							//Block size
+		int blockSize = 8;         							//Block size
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 
 
-
+		
 		//Compression of image scrambled
-		
-		
 		Image image = ImageIO.read(new File("img/join.jpg"));
-		int quality = 50;                      
+		int quality = new Random().nextInt(101);
+		System.out.println("quality "+quality);
 		FileOutputStream dataOut = new FileOutputStream (new File("img/compressed.jpg"));
 		JPEGEncoder encoder = new JPEGEncoder(image, quality, dataOut);
 		encoder.Compress();
@@ -79,7 +79,7 @@ public class Runner {
 		
 
 		/*
-		BufferedImage img = ImageIO.read(new File("img/ucid.jpg"));
+		BufferedImage img = ImageIO.read(new File("img/join.jpg"));
 		FileOutputStream dataOut = new FileOutputStream (new File("img/compressed.jpg"));
 		JpegEncoder encr = new JpegEncoder();
 		encr.setQuality(80);
