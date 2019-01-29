@@ -1,7 +1,10 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
 import java.awt.image.DataBufferByte;
+import java.awt.image.Kernel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,8 +47,6 @@ public class DecryptionSteps {
 		}
 		
 		writeImage(new File("Decrypt/YCbCr.jpg"), img);
-		
-		
 	}
 
 	public static void separateImage() throws IOException{
@@ -185,8 +186,16 @@ public class DecryptionSteps {
 		}
 
 		//ImageIO.write(base,"jpg", new File("Decrypt/final.jpg"));
-
 		File outfile = new File("Decrypt/final.jpg");
+		
+		Kernel kernel = new Kernel(3, 3, new float[] {
+													  0.0f ,-0.99f,  0.0f,
+													  -0.99f , 5.0f, -0.99f,
+												       0.0f ,-0.99f,  0.0f
+												       });
+	    BufferedImageOp op = new ConvolveOp(kernel);
+	    base = op.filter(base, null);
+		
 		writeImage(outfile, base);
 
 	}
