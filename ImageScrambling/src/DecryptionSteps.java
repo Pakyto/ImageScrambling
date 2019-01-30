@@ -189,9 +189,9 @@ public class DecryptionSteps {
 		File outfile = new File("Decrypt/final.jpg");
 		
 		Kernel kernel = new Kernel(3, 3, new float[] {
-													  0.0f ,-0.99f,  0.0f,
-													  -0.99f , 5.0f, -0.99f,
-												       0.0f ,-0.99f,  0.0f
+													  0.0f ,-0.3f,  0.0f,
+													  -0.3f , 2.2f, -0.3f,
+												       0.0f ,-0.3f,  0.0f
 												       });
 	    BufferedImageOp op = new ConvolveOp(kernel);
 	    base = op.filter(base, null);
