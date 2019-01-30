@@ -16,6 +16,9 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import com.idrsolutions.image.jpeg.JpegDecoder;
 import com.idrsolutions.image.jpeg.JpegEncoder;
@@ -27,6 +30,7 @@ public class Runner {
 
 	public static void main(String[] args) throws Exception {
 
+		
 		File input = new File("img/ucid.jpg");
 
 		File out = EncryptionSteps.initialize(input);
@@ -62,7 +66,7 @@ public class Runner {
 		FileUtils.cleanDirectory(new File("split")); 
 
 		new File("Decrypt").mkdir();
-		int blockSize = 8;         							//Block size
+		int blockSize = 16;         							//Block size
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 
