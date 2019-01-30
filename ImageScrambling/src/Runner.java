@@ -16,9 +16,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 import com.idrsolutions.image.jpeg.JpegDecoder;
 import com.idrsolutions.image.jpeg.JpegEncoder;
@@ -30,7 +27,6 @@ public class Runner {
 
 	public static void main(String[] args) throws Exception {
 
-		
 		File input = new File("img/ucid.jpg");
 
 		File out = EncryptionSteps.initialize(input);
@@ -70,8 +66,14 @@ public class Runner {
 		BlockScrambling.splitImage(output,blockSize);
 		BlockScrambling.join();
 
-
+		int quality = new Random().nextInt(101);
+		System.out.println("quality "+quality);
 		
+		String[] arg = {"img/ucid.jpg","img/test.jpg","-subsamp","420","-q",Integer.toString(quality)};
+
+		TJExample.main(arg);
+
+		/*
 		//Compression of image scrambled
 		Image image = ImageIO.read(new File("img/join.jpg"));
 		int quality = new Random().nextInt(101);
@@ -80,16 +82,16 @@ public class Runner {
 		JPEGEncoder encoder = new JPEGEncoder(image, quality, dataOut);
 		encoder.Compress();
 		dataOut.close();
-		
 
-		/*
+
+		
 		BufferedImage img = ImageIO.read(new File("img/join.jpg"));
 		FileOutputStream dataOut = new FileOutputStream (new File("img/compressed.jpg"));
 		JpegEncoder encr = new JpegEncoder();
 		encr.setQuality(80);
 		encr.write(img, dataOut);
-		*/
 		
+
 		File f = new File("img/compressed.jpg");
 		BufferedImage compressed = ImageIO.read(f);
 		ByteArrayOutputStream b=new ByteArrayOutputStream();
@@ -98,7 +100,7 @@ public class Runner {
 		JpegDecoder jpeg = new JpegDecoder();
 		BufferedImage decompressed = jpeg.read(byteImage);
 		ImageIO.write(decompressed, "jpg", new File("Decrypt/decompressed.jpg"));
-		
+		*/
 
 		DecryptionSteps.gray2YCbCr();
 		DecryptionSteps.separateImage();
@@ -106,6 +108,7 @@ public class Runner {
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/greenYCBR.jpg"));
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/blueYCBR.jpg"));
 		DecryptionSteps.mergeRGB(new File("Decrypt/red.jpg"), new File("Decrypt/green.jpg"), new File("Decrypt/blue.jpg"));
+
 
 
 	}
