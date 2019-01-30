@@ -28,6 +28,9 @@ public class EncryptionSteps {
 
 	public static File initialize(File input) throws IOException{
 		File out = input;
+		
+		Files.deleteIfExists(Paths.get("img/out.jpg"));
+		
 		if(input.getName().contains(".tif")){
 			FileSeekableStream stream = null;
 
@@ -289,6 +292,7 @@ public class EncryptionSteps {
 		BufferedImage img = ImageIO.read(input);
 		File result = null;
 
+		
 		//get image width and height
 		int width = img.getWidth();
 		int height = img.getHeight();
@@ -329,7 +333,7 @@ public class EncryptionSteps {
 			System.out.println(e);
 		}
 
-		Files.deleteIfExists(Paths.get("img/out.jpg"));
+		//Files.deleteIfExists(Paths.get("img/out.jpg"));
 
 		return result;
 	}

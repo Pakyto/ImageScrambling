@@ -347,8 +347,11 @@ class TJExample implements TJCustomFilter {
 					System.out.println("decompressss elseeeee");
 					imgBuf = tjd.decompress(width, 0, height, TJ.PF_BGRX, flags);
 				}
+
 				tjd.close();
-				
+
+
+
 			} else {
 				/* Input image is not a JPEG image.  Load it into memory. */
 				img = ImageIO.read(new File(argv[0]));
@@ -387,10 +390,13 @@ class TJExample implements TJCustomFilter {
 				tjc.setSubsamp(outSubsamp);
 				tjc.setJPEGQuality(outQual);
 
-				if (img != null)
+				if (img != null){
 					tjc.setSourceImage(img, 0, 0, 0, 0);
-				else
+				}
+				else{
 					tjc.setSourceImage(imgBuf, 0, 0, width, 0, height, TJ.PF_BGRX);
+					System.out.println("djshsfsdhfsjdksdk");
+				}
 				byte[] jpegBuf = tjc.compress(flags);
 				System.out.println("compresssss");
 				int jpegSize = tjc.getCompressedSize();

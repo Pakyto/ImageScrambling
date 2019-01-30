@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Random;
 
@@ -22,16 +23,54 @@ import com.idrsolutions.image.jpeg.JpegEncoder;
 import com.sun.media.jai.codec.ImageDecodeParam;
 import com.sun.media.jai.codecimpl.JPEGCodec;
 import com.sun.media.jai.codecimpl.JPEGImageDecoder;
+import com.sun.media.jai.codecimpl.util.Range;
+
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 public class Runner {
 
+	private static final String EXCEL_FILE_LOCATION = "MyFirstExcel.xls";
+
 	public static void main(String[] args) throws Exception {
 
-		File input = new File("img/ucid.jpg");
+		int quality = 75;
+		
+		WritableWorkbook myFirstWbook = null;
 
-		File out = EncryptionSteps.initialize(input);
 
-		/*
+		Files.deleteIfExists(Paths.get(EXCEL_FILE_LOCATION));
+
+		myFirstWbook = Workbook.createWorkbook(new File(EXCEL_FILE_LOCATION));
+
+		// create an Excel sheet
+		WritableSheet excelSheet = myFirstWbook.createSheet("Sheet 1", 0);
+
+		// add something into the Excel sheet
+		Label label = new Label(0, 0, "Quality factor");       //Colonna 0 riga 0
+		excelSheet.addCell(label);
+
+		label = new Label(1, 0, "PSNR");      
+		excelSheet.addCell(label);
+		
+		for(int i=1; i<=20; i++){
+			
+			File input = null;
+			if(i<10){
+				input = new File("dataset/ucid0000"+i+".tif");
+			}else{
+				input = new File("dataset/ucid000"+i+".tif");
+			}
+
+			File out = EncryptionSteps.initialize(input);
+
+			String outFile = "img/"+out.getName();
+			
+			/*
 		//Compression of image scrambled
 		Image image = ImageIO.read(out);
 		int defaultQuality = 1;   
@@ -44,34 +83,92 @@ public class Runner {
 		File red = EncryptionSteps.extractRed(imgCompressed);
 		File green = EncryptionSteps.extractGreen(imgCompressed);
 		File blue = EncryptionSteps.extractBlue(imgCompressed)
-		 */
+			 */
 
-		File red = EncryptionSteps.extractRed(out);
-		File green = EncryptionSteps.extractGreen(out);
-		File blue = EncryptionSteps.extractBlue(out);
+			File red = EncryptionSteps.extractRed(out);
+			File green = EncryptionSteps.extractGreen(out);
+			File blue = EncryptionSteps.extractBlue(out);
 
-		File ycbr_red = EncryptionSteps.rgb2ycbcr(red);
-		File ycbr_green = EncryptionSteps.rgb2ycbcr(green);
-		File ycbc_blue = EncryptionSteps.rgb2ycbcr(blue);
+			File ycbr_red = EncryptionSteps.rgb2ycbcr(red);
+			File ycbr_green = EncryptionSteps.rgb2ycbcr(green);
+			File ycbc_blue = EncryptionSteps.rgb2ycbcr(blue);
 
-		File final_image = EncryptionSteps.concatenateImage(ycbr_red, ycbr_green, ycbc_blue);
-		File output = EncryptionSteps.convertToGray(final_image);
+			File final_image = EncryptionSteps.concatenateImage(ycbr_red, ycbr_green, ycbc_blue);
+			File output = EncryptionSteps.convertToGray(final_image);
 
 
-		new File("split").mkdir();
-		FileUtils.cleanDirectory(new File("split")); 
+			new File("split").mkdir();
+			FileUtils.cleanDirectory(new File("split")); 
 
-		new File("Decrypt").mkdir();
-		int blockSize = 16;         							//Block size
-		BlockScrambling.splitImage(output,blockSize);
-		BlockScrambling.join();
+			new File("Decrypt").mkdir();
+			int blockSize = 128;         							//Block size
+			BlockScrambling.splitImage(output,blockSize);
+			BlockScrambling.join();
 
-		int quality = new Random().nextInt(101);
-		System.out.println("quality "+quality);
+
+			DecryptionSteps.gray2YCbCr();
+			DecryptionSteps.separateImage();
+			DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));
+			DecryptionSteps.Ycbr2Rgb(new File("Decrypt/greenYCBR.jpg"));
+			DecryptionSteps.Ycbr2Rgb(new File("Decrypt/blueYCBR.jpg"));
+			DecryptionSteps.mergeRGB(new File("Decrypt/red.jpg"), new File("Decrypt/green.jpg"), new File("Decrypt/blue.jpg"));
+
+
+			//int quality = new Random().nextInt((100-70)+1)+70;
+			//quality+=count;
+			System.out.println("quality "+quality);
+
+			String[] arg = {outFile,"img/compressed.jpg","-subsamp","444","-q",String.valueOf(quality)};
+
+			TJExample.main(arg);
+
+			//String[] arg2 = {"img/compressed.jpg"};
+			//TJBench.main(arg2);
+
+			BufferedImage img = ImageIO.read(new File("img/compressed.jpg"));
+			BufferedImage img2 = ImageIO.read(new File("Decrypt/final.jpg"));
+			double psnr = Tools.printPSNR(img, img2);
+
+
+
+			Number number = new Number(0, i, quality);       //Colonna 0 riga 1
+			excelSheet.addCell(number);
+
+			
+			label = new Label(1, i, String.valueOf(psnr).replace('.', ','));
+			excelSheet.addCell(label);
+			
+		}
 		
-		String[] arg = {"img/ucid.jpg","img/test.jpg","-subsamp","420","-q",Integer.toString(quality)};
+		myFirstWbook.write();
 
-		TJExample.main(arg);
+		if (myFirstWbook != null) {
+			try {
+				myFirstWbook.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (WriteException e) {
+				e.printStackTrace();
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		/*
 		//Compression of image scrambled
@@ -84,13 +181,13 @@ public class Runner {
 		dataOut.close();
 
 
-		
+
 		BufferedImage img = ImageIO.read(new File("img/join.jpg"));
 		FileOutputStream dataOut = new FileOutputStream (new File("img/compressed.jpg"));
 		JpegEncoder encr = new JpegEncoder();
 		encr.setQuality(80);
 		encr.write(img, dataOut);
-		
+
 
 		File f = new File("img/compressed.jpg");
 		BufferedImage compressed = ImageIO.read(f);
@@ -100,14 +197,16 @@ public class Runner {
 		JpegDecoder jpeg = new JpegDecoder();
 		BufferedImage decompressed = jpeg.read(byteImage);
 		ImageIO.write(decompressed, "jpg", new File("Decrypt/decompressed.jpg"));
-		*/
+		 */
 
+		/*
 		DecryptionSteps.gray2YCbCr();
 		DecryptionSteps.separateImage();
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/greenYCBR.jpg"));
 		DecryptionSteps.Ycbr2Rgb(new File("Decrypt/blueYCBR.jpg"));
 		DecryptionSteps.mergeRGB(new File("Decrypt/red.jpg"), new File("Decrypt/green.jpg"), new File("Decrypt/blue.jpg"));
+		 */
 
 
 

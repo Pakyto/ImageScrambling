@@ -354,7 +354,7 @@ public class BlockScrambling {
 		ImageIO.write(combineImage, "jpg", new File("img/join.jpg"));
 		System.out.println("Image rejoin done.");
 
-		FileUtils.cleanDirectory(new File("split")); 
+		FileUtils.forceDelete(new File("split")); 
 	}
 
 	
