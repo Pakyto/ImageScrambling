@@ -19,6 +19,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 
 public class EncryptionSteps {
 	private static BufferedImage img = null;
@@ -37,8 +38,10 @@ public class EncryptionSteps {
 			stream = new FileSeekableStream(input);
 			ImageDecoder dec = ImageCodec.createImageDecoder("tiff", stream,null);
 			RenderedImage image =   dec.decodeAsRenderedImage(0);
-			JAI.create("filestore",image ,"img/out.jpg","JPEG");
+			BufferedImage bi = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
+			//JAI.create("filestore",image ,"img/out.jpg","JPEG");
 			out = new File ("img/out.jpg");
+			writeImage(out, bi);
 		}
 		img = ImageIO.read(out);
 
@@ -261,7 +264,7 @@ public class EncryptionSteps {
 			//ImageIO.write(imgH, "jpeg", final_image); //if png is used, write "png" instead "jpeg"			
 			writeImage(final_image, imgH);
 			//ImageIO.write(imgH, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
-			writeImage(new File("Decrypt/KEY.jpg"), imgH);
+			//writeImage(new File("Decrypt/KEY.jpg"), imgH);
 
 		}else{
 			//Vertically
@@ -281,7 +284,7 @@ public class EncryptionSteps {
 			//ImageIO.write(imgV, "jpeg", final_image); //if png is used, write "png" instead "jpeg"
 			writeImage(final_image, imgV);
 			//ImageIO.write(imgV, "jpeg", new File("Decrypt/KEY.jpg"));  //Viene salvata l'immagine concatenata come chiave
-			writeImage(new File("Decrypt/KEY.jpg"), imgV);
+			//writeImage(new File("Decrypt/KEY.jpg"), imgV);
 
 		}
 

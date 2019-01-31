@@ -969,7 +969,7 @@ final class TJBench {
       if (decompOnly) {
         decompTest(argv[0]);
         System.out.println("");
-        System.exit(retval);
+        //System.exit(retval);
       }
 
       System.gc();
@@ -1002,8 +1002,6 @@ final class TJBench {
         System.out.println((tje.getErrorCode() == TJ.ERR_WARNING ?
                             "WARNING: " : "ERROR: ") + tje.getMessage());
       } else
-        System.out.println("ERROR: " + e.getMessage());
-      e.printStackTrace();
       retval = -1;
     }
 
