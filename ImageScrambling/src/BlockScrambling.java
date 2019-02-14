@@ -193,52 +193,23 @@ public class BlockScrambling {
 
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
-				int i1 = rand.nextInt(imageChunks.length);
-				int j1 = rand.nextInt(imageChunks[i].length);
-
-				String n1 = Integer.toString(i1);
-				String n2 = Integer.toString(j1);
-
-				String finalString = n1+" "+n2;
-
-				list.add(finalString);
-
 				CoordsImageBlock coordsReal = new CoordsImageBlock(i, j);
 				Keys.addCoords(coordsReal,imageChunks[i][j]);        //Salvataggio blocchi originali
 			}
 		}
 
-		Set<String> mySet = new HashSet(list);
-		list.clear();
-		list.addAll(mySet);
 
-		while(list.size()<imageChunks.length*imageChunks[0].length){
-			fillList(imageChunks.length,imageChunks[0].length);
-		}
-
-		System.out.println("SIZE FINALEE LISTA "+list.size());
-
-		Collections.shuffle(list);
-
-
-		int count = 0;
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
-				String numb = list.get(count);
-
-				String n1 = numb.substring(0, numb.length()-2);
-				String n2 = numb.substring(numb.length()-1, numb.length());
-
-
-				int i1= Integer.valueOf(n1);
-				int j1= Integer.valueOf(n2);
+				
+				int i1 = rand.nextInt(imageChunks.length);
+				int j1 = rand.nextInt(imageChunks[i].length);
 		
 				BufferedImage tmp = imageChunks[i][j];
 				
 				imageChunks[i][j] = imageChunks[i1][j1];
 				imageChunks[i1][j1] = tmp;
 
-				count++;
 			}
 
 		}
@@ -588,51 +559,23 @@ public class BlockScrambling {
 
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
-				int i1 = rand.nextInt(imageChunks.length);
-				int j1 = rand.nextInt(imageChunks[i].length);
-
-				String n1 = Integer.toString(i1);
-				String n2 = Integer.toString(j1);
-
-				String finalString = n1+" "+n2;
-
-				list.add(finalString);
-
 				CoordsImageBlock coordsReal = new CoordsImageBlock(i, j);
-				Keys.addCoords(coordsReal,imageChunks[i][j]);
+				Keys.addCoords(coordsReal,imageChunks[i][j]);        //Salvataggio blocchi originali
 			}
 		}
 
-		Set<String> mySet = new HashSet(list);
-		list.clear();
-		list.addAll(mySet);
 
-		while(list.size()<imageChunks.length*imageChunks[0].length){
-			fillList(imageChunks.length,imageChunks[0].length);
-		}
-
-		System.out.println("SIZE FINALEE LISTA "+list.size());
-
-		Collections.shuffle(list);
-
-
-		int count = 0;
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
-				String numb = list.get(count);
-
-				String n1 = numb.substring(0, numb.length()-2);
-				String n2 = numb.substring(numb.length()-1, numb.length());
-
-
-				int i1= Integer.valueOf(n1);
-				int j1= Integer.valueOf(n2);
+				
+				int i1 = rand.nextInt(imageChunks.length);
+				int j1 = rand.nextInt(imageChunks[i].length);
 		
 				BufferedImage tmp = imageChunks[i][j];
 				
 				imageChunks[i][j] = imageChunks[i1][j1];
 				imageChunks[i1][j1] = tmp;
-				count++;
+
 			}
 
 		}
@@ -978,50 +921,5 @@ public class BlockScrambling {
 		//writeImage(new File("Decrypt/KEY.jpg"), combineImage);
 		System.out.println("Image REEEjoin done.");
 		*/
-	}
-
-
-	/**
-	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
-	 * @param file
-	 * @param img
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	/*
-	public static void writeImage(File file,BufferedImage img) throws FileNotFoundException, IOException{
-		FileImageOutputStream output = new FileImageOutputStream(file);
-
-		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
-		ImageWriter writer = iter.next();
-		ImageWriteParam iwp = writer.getDefaultWriteParam();
-		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-		iwp.setCompressionQuality(1.0f);
-		writer.setOutput(output);
-		writer.write(null, new IIOImage(img ,null,null),iwp);
-		writer.dispose();
-	}
-	 */
-
-	static void fillList(int m, int n){
-		Random rand = new Random();		
-		for(int i=0; i<m; i++){
-			for(int j=0; j<n; j++){
-				int i1 = rand.nextInt(m);
-				int j1 = rand.nextInt(n);
-
-				String n1 = Integer.toString(i1);
-				String n2 = Integer.toString(j1);
-
-				String finalString = n1+" "+n2;
-
-				list.add(finalString);
-			}
-		}
-
-		Set<String> mySet = new HashSet(list);
-		list.clear();
-		list.addAll(mySet);
-
 	}
 }

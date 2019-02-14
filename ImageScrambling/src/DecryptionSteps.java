@@ -219,6 +219,202 @@ public class DecryptionSteps {
 
 		writeImage(new File("Decrypt/finalInverse.jpg"), combineImage);
 	}
+	
+	public static void inverseNegativePositveEval(int index) throws IOException{
+
+		BufferedImage[][] imgs = Keys.imageKey;
+
+		BufferedImage[][] finalsImg = new BufferedImage[Keys.totalwidth+1][Keys.height+1];
+
+		BufferedImage combineImage = new BufferedImage(Keys.totalwidth, Keys.totalheight, Keys.type);
+
+		int stackWidth = 0;
+		int stackHeight = 0;
+
+
+		for (int i = 0; i <= Keys.cols; i++) {
+			for (int j = 0; j <= Keys.rows; j++) {
+
+				int w = imgs[i][j].getWidth();  
+				int h = imgs[i][j].getHeight(); 
+
+				
+				RGBInverseTrasformation rgb = Keys.listValueRGBInverse[j][i];
+				//Inverse negative-positive transformation
+				for(int y = 0; y < h; y++){
+					for(int x = 0; x < w; x++){
+						int p = imgs[i][j].getRGB(x, y);	
+						int a = (p>>24)&0xff;
+						int r = (p>>16)&0xff;
+						int gr = (p>>8)&0xff;
+						int b = p&0xff;
+
+						if(rgb != null){
+							if(rgb.getCols()==i && rgb.getRows()==j){
+
+								r = 255 - r;
+								gr = 255 - gr;
+								b = 255 - b;
+							}
+
+						}
+						p = (a<<24) | (r<<16) | (gr<<8) | b;
+
+						imgs[i][j].setRGB(x, y, p);
+					}
+				}
+
+
+
+				KeysInvRotationInversion key = Keys.keysInvRotationInverse[j][i];
+				int rotation = key.getRotation();
+				int inversion = key.getInversion();
+
+				//System.out.println(key.toString());
+
+				//Inversione blocchi
+				switch (inversion) {
+				case 0:{
+					break;
+				}
+				case 1:{
+					BufferedImage dimg = new BufferedImage(w, h, imgs[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imgs[i][j], 0, 0, w, h, w, 0, 0, h, null); 
+					g.dispose();
+
+					imgs[i][j] = dimg;
+					break;
+				}
+				case 2:{
+					BufferedImage dimg = new BufferedImage(w, h, imgs[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imgs[i][j],0, 0, w, h, 0, h, w, 0, null);  
+					g.dispose();
+
+					imgs[i][j] = dimg;
+					break;
+				}
+				case 3:{
+					BufferedImage dimg = new BufferedImage(w, h, imgs[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imgs[i][j], 0, 0, w, h, w, 0, 0, h, null);  //Horizontally
+					g.dispose();
+
+					imgs[i][j] = dimg;
+
+					BufferedImage dimg2 = new BufferedImage(w, h, imgs[i][j].getType());  
+					Graphics2D g2 = dimg2.createGraphics();  
+					g2.drawImage(imgs[i][j], 0, 0, w, h, 0, h, w, 0, null); 		//Vertically
+					g2.dispose();
+
+					imgs[i][j] = dimg2;
+					break;
+				}
+				}
+
+				//Inverse rotation
+				switch(rotation){
+				case 0:{
+					break;
+				}
+				case 90:{
+					double rads = Math.toRadians(270);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imgs[i][j], 0, 0, null);
+					imgs[i][j] = rotated;
+
+					break;					
+				}
+				case 180:{
+
+					double rads = Math.toRadians(180);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imgs[i][j], 0, 0, null);
+					imgs[i][j] = rotated;
+
+					break;
+				}
+				case 270:{
+					double rads = Math.toRadians(90);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imgs[i][j], 0, 0, null);
+					imgs[i][j] = rotated;
+					break;
+				}
+				}
+			}
+		
+		}
+
+		//Block assembling
+		BufferedImage image = null;
+		for(int i=0; i<imgs.length; i++){
+			for(int j=0; j<imgs[i].length; j++){
+				for(CoordsImageBlock cords : Keys.listCoordsImage.keySet()){
+					if(cords.getI() == i && cords.getJ() == j){
+						image = Keys.listCoordsImage.get(cords);
+					}
+				}
+				finalsImg[i][j] = image;
+			}
+
+		}
+		
+		for (int i = 0; i <= Keys.cols; i++) {
+			for (int j = 0; j <= Keys.rows; j++) {	
+				combineImage.createGraphics().drawImage(finalsImg[i][j], stackWidth, stackHeight, null);
+				stackHeight += finalsImg[i][j].getHeight();
+			}
+			stackWidth += finalsImg[i][0].getWidth();
+			stackHeight = 0;
+		}
+
+
+		writeImage(new File("Decrypt/finalInverse"+index+".jpg"), combineImage);
+	}
 
 	public static void gray2YCbCr() throws IOException{
 		img = ImageIO.read(new File("Decrypt/finalInverse.jpg"));

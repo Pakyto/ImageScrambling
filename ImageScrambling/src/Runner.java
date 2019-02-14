@@ -34,13 +34,13 @@ public class Runner {
 		
 		/*EVALUATION*/
 		if(evaluate == 1) {									
-			int quality = 100;
+			int quality = 70;
 			int count = 0;
 			
 					
 			for(int i=1; i<=20; i++){
 				
-				if(i>1) {
+				if(quality>70) {
 					break;
 				} 
 				
@@ -94,20 +94,7 @@ public class Runner {
 
 				System.out.println("quality "+quality);
 
-				
-							
-				/*DECOMPRESSIONE IMMAGINI ROSSO, BLU, VERDE*/
-				String[] arg4 = {"img/red.jpg"};				//JBENCH Decompression of key image
-				TJBench.main(arg4);									//JBENCH generate decompressed image (compressed_decompressed)			
-				
-				String[] arg5 = {"img/blue.jpg"};				//JBENCH Decompression of key image
-				TJBench.main(arg5);									//JBENCH generate decompressed image (compressed_decompressed)				
-		
-				String[] arg6 = {"img/green.jpg"};				//JBENCH Decompression of key image
-				TJBench.main(arg6);									//JBENCH generate decompressed image (compressed_decompressed)	
-				/*	*/
-		
-		
+						
 				DecryptionSteps.inverseNegativePositve();
 				DecryptionSteps.gray2YCbCr();
 				DecryptionSteps.separateImage();
@@ -126,7 +113,8 @@ public class Runner {
 			
 		
 		} else {
-			
+			int quality = 70;
+
 			File input = new File("dataset/ucid00002.tif");
 			
 			File out = EncryptionSteps.initialize(input);
@@ -135,6 +123,19 @@ public class Runner {
 			File green = EncryptionSteps.extractGreen(out);
 			File blue = EncryptionSteps.extractBlue(out);
 
+			/*COMPRESSIONE IMMAGINI ROSSO, BLU, VERDE*/
+			String[] arg1 = {"img/red.jpg","img/red.jpg","-subsamp","444","-q",String.valueOf(quality)};
+
+			TJExample.main(arg1);								//Compression of key image
+			
+			String[] arg2 = {"img/blue.jpg","img/blue.jpg","-subsamp","444","-q",String.valueOf(quality)};
+
+			TJExample.main(arg2);								//Compression of key image
+			
+			String[] arg3 = {"img/green.jpg","img/green.jpg","-subsamp","444","-q",String.valueOf(quality)};
+
+			TJExample.main(arg3);								//Compression of key image
+			
 			File ycbr_red = EncryptionSteps.rgb2ycbcr(red);
 			File ycbr_green = EncryptionSteps.rgb2ycbcr(green);
 			File ycbc_blue = EncryptionSteps.rgb2ycbcr(blue);
@@ -147,18 +148,17 @@ public class Runner {
 			FileUtils.cleanDirectory(new File("split")); 
 
 			new File("Decrypt").mkdir();
-			int blockSize = 128;         							//Block size
+			int blockSize = 8;         							//Block size
 			BlockScrambling.splitImage(output,blockSize);
 			BlockScrambling.join();
 			
-			int quality = 80;
 			
 			String[] arg = {"img/join.jpg","img/compressed.jpg","-subsamp","444","-q",String.valueOf(quality)};
 
-			TJExample.main(arg);					/*COMPRESSION*/
+			TJExample.main(arg);					/*COMPRESSION OF CIPHER IMAGE*/
 
-			String[] arg2 = {"img/compressed.jpg"};
-			TJBench.main(arg2);						/*DECOMPRESSION*/
+			String[] arg21 = {"img/compressed.jpg"};
+			TJBench.main(arg21);						/*DECOMPRESSION OF CIPHER IMAGE*/
 			
 			DecryptionSteps.inverseNegativePositve();
 			DecryptionSteps.gray2YCbCr();
