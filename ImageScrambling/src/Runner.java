@@ -38,7 +38,7 @@ public class Runner {
 
 	public static void main(String[] args) throws Exception {
 		
-		int evaluate = 1;
+		int evaluate = 0;
 		
 		if(evaluate == 1) {
 			int quality = 70;
@@ -218,12 +218,13 @@ public class Runner {
 			
 			String[] arg = {"img/join.jpg","img/compressed.jpg","-subsamp","444","-q",String.valueOf(quality)};
 
-			TJExample.main(arg);					/*COMPRESSION*/
+			//TJExample.main(arg);					/*COMPRESSION*/
 
 			String[] arg2 = {"img/compressed.jpg"};
-			TJBench.main(arg2);						/*DECOMPRESSION*/
+			//TJBench.main(arg2);						/*DECOMPRESSION*/
 			
 			
+			DecryptionSteps.inverseNegativePositve();
 			DecryptionSteps.gray2YCbCr();
 			DecryptionSteps.separateImage();
 			DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));

@@ -7,13 +7,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -27,6 +31,8 @@ public class BlockScrambling {
 
 	private static int totalCols,totalRows;
 	private static int rowsOfSquare,colsOfSquare;
+	static List<String>list = new ArrayList<>();
+
 
 	public static void splitImage(File input,int blockSize)throws IOException{
 
@@ -181,15 +187,61 @@ public class BlockScrambling {
 
 		/*SHUFFLING BLOCCHI*/
 
+		Keys.initializeCoords();
+
+		Random rand = new Random();
+
 		for(int i=0; i<imageChunks.length; i++){
 			for(int j=0; j<imageChunks[i].length; j++){
-				int i1 = (int) (Math.random()*imageChunks.length);
-				int j1 = (int) (Math.random()*imageChunks[i].length);
+				int i1 = rand.nextInt(imageChunks.length);
+				int j1 = rand.nextInt(imageChunks[i].length);
 
+				String n1 = Integer.toString(i1);
+				String n2 = Integer.toString(j1);
+
+				String finalString = n1+" "+n2;
+
+				list.add(finalString);
+
+				CoordsImageBlock coordsReal = new CoordsImageBlock(i, j);
+				Keys.addCoords(coordsReal,imageChunks[i][j]);
+			}
+		}
+
+		Set<String> mySet = new HashSet(list);
+		list.clear();
+		list.addAll(mySet);
+
+		while(list.size()<imageChunks.length*imageChunks[0].length){
+			fillList(imageChunks.length,imageChunks[0].length);
+		}
+
+		System.out.println("SIZE FINALEE LISTA "+list.size());
+
+		Collections.shuffle(list);
+
+
+		int count = 0;
+		for(int i=0; i<imageChunks.length; i++){
+			for(int j=0; j<imageChunks[i].length; j++){
+				String numb = list.get(count);
+
+				String n1 = numb.substring(0, numb.length()-2);
+				String n2 = numb.substring(numb.length()-1, numb.length());
+
+
+				int i1= Integer.valueOf(n1);
+				int j1= Integer.valueOf(n2);
+		
 				BufferedImage tmp = imageChunks[i][j];
+				
 				imageChunks[i][j] = imageChunks[i1][j1];
 				imageChunks[i1][j1] = tmp;
+
+				System.out.println("\n");
+				count++;
 			}
+
 		}
 
 		/**
@@ -202,6 +254,14 @@ public class BlockScrambling {
 		int stackWidth = 0;
 		int stackHeight = 0;
 
+		Keys.height = rows;
+		Keys.width = cols;
+		Keys.totalheight = totalHeight;
+		Keys.totalwidth = totalWidth;
+		Keys.type = type;
+		Keys.initializeRGBInverse(rows+1,cols+1);
+		Keys.initializeInvRotInv(rows+1, cols+1);
+
 		//Processing each block
 		for (int i = 0; i <= cols; i++) {
 			for (int j = 0; j <= rows; j++) {
@@ -209,69 +269,171 @@ public class BlockScrambling {
 				Keys.angleRotation = new Random().nextInt(4);
 				Keys.negativePositiveTranform = new Random().nextInt(2);
 
-				Graphics2D g = imageChunks[i][j].createGraphics();
+				//Graphics2D g = imageChunks[i][j].createGraphics();
 				int w = imageChunks[i][j].getWidth();  
 				int h = imageChunks[i][j].getHeight();
 
-				
+
+
+				KeysInvRotationInversion key = new KeysInvRotationInversion(i, j);
+
+
 				//Rotation of each block
 				switch(Keys.angleRotation){
 				case 0:{
 					System.out.println("0");
+					key.setRotation(0);
 					//No rotation
 					break;
 				}
 				case 1:{
 					System.out.println("90");
-					g.rotate(Math.toRadians(90.0), w/2, h/2);    //Rotate to 90 degres
+					key.setRotation(90);
+
+					double rads = Math.toRadians(90);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imageChunks[i][j], 0, 0, null);
+					imageChunks[i][j] = rotated;
+
 					break;
 				}
 				case 2:{
 					System.out.println("180");
-					g.rotate(Math.toRadians(180.0), w/2, h/2);    //Rotate to 180 degres
+					key.setRotation(180);
+
+					double rads = Math.toRadians(180);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imageChunks[i][j], 0, 0, null);
+					imageChunks[i][j] = rotated;
+
 					break;
 				}
 				case 3:{
 					System.out.println("270");
-					g.rotate(Math.toRadians(270.0), w/2, h/2);    //Rotate to 270 degres
+					key.setRotation(270);
+
+					double rads = Math.toRadians(270);
+					double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
+
+					int newWidth = (int) Math.floor(w * cos + h * sin);
+					int newHeight = (int) Math.floor(h * cos + w * sin);
+
+					BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = rotated.createGraphics();
+					AffineTransform at = new AffineTransform();
+					at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+					int x = w / 2;
+					int y = h / 2;
+
+					at.rotate(rads, x, y);
+					g2d.setTransform(at);
+					g2d.drawImage(imageChunks[i][j], 0, 0, null);
+					imageChunks[i][j] = rotated;
+
 					break;
 				}
 				}
-				g.drawImage(imageChunks[i][j], null, 0, 0);  	
-				g.dispose();
+
 
 				//Inversion of each block
 				switch(Keys.inversionMode){
 				case 0:{
 					//No inversion
 					System.out.println("no inversion");
+					key.setInversion(0);
 					break;
 				}
 				case 1:{
 					//Block inversion horizontally 
 					System.out.println("horizont");
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);
+
+					BufferedImage dimg = new BufferedImage(w, h, imageChunks[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null); 
+					g.dispose();
+
+					imageChunks[i][j] = dimg;
+
+					key.setInversion(1);
 					break;
 				}
 				case 2:{
 					//Block inversion vertically 
 					System.out.println("vertical");
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);
+
+					BufferedImage dimg = new BufferedImage(w, h, imageChunks[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imageChunks[i][j],0, 0, w, h, 0, h, w, 0, null);  
+					g.dispose();
+
+					imageChunks[i][j] = dimg;
+					key.setInversion(2);
+					break;
 				}
 				case 3:{
 					//Block inversion horizontally & vertically
 					System.out.println("horizont & vertical");
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);
-					g.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null);
+
+					BufferedImage dimg = new BufferedImage(w, h, imageChunks[i][j].getType());  
+					Graphics2D g = dimg.createGraphics();  
+					g.drawImage(imageChunks[i][j], 0, 0, w, h, w, 0, 0, h, null);  //Horizontally
+					g.dispose();
+
+					imageChunks[i][j] = dimg;
+
+					BufferedImage dimg2 = new BufferedImage(w, h, imageChunks[i][j].getType());  
+					Graphics2D g2 = dimg2.createGraphics();  
+					g2.drawImage(imageChunks[i][j], 0, 0, w, h, 0, h, w, 0, null); 		//Vertically
+					g2.dispose();
+
+					imageChunks[i][j] = dimg2;
+
+					key.setInversion(3);
 					break;
 				}
 				}
 
+				Keys.addInverseRotate(j, i, key);
+
+
 
 				//Negative trasformation for each pixel of block
-				
 				if(Keys.negativePositiveTranform == 1){
 					System.out.println("negative");
+
+					RGBInverseTrasformation rgb = new RGBInverseTrasformation(i,j);
+					Keys.addRGBInverse(j, i, rgb);
+
+
 					for(int y = 0; y < h; y++){
 						for(int x = 0; x < w; x++){
 							int p = imageChunks[i][j].getRGB(x, y);	
@@ -279,6 +441,7 @@ public class BlockScrambling {
 							int r = (p>>16)&0xff;
 							int gr = (p>>8)&0xff;
 							int b = p&0xff;
+
 							//subtract RGB from 255
 							r = 255 - r;
 							gr = 255 - gr;
@@ -293,8 +456,10 @@ public class BlockScrambling {
 					System.out.println("positive");
 				}
 
+
+
 				/*Shuffling color components for each block*/
-				
+
 				Keys.randColor = new Random().nextInt(6);  
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
@@ -305,7 +470,7 @@ public class BlockScrambling {
 						r = (p>>16)&0xff;
 						gr = (p>>8)&0xff;
 						b = p&0xff;
-						
+
 						switch(Keys.randColor){
 						case 0:{
 							p = (a<<24) | (r<<16) | (gr<<8) | b;
@@ -315,12 +480,12 @@ public class BlockScrambling {
 							p = (a<<24) | (gr<<8) |(r<<16) | b;
 							break;
 						}
-						
+
 						case 2:{
 							p = (a<<24) | b |(r<<16) |(gr<<8);
 							break;
 						}
-						
+
 						case 3:{
 							p = (a<<24) | b | (gr<<8) |(r<<16);
 							break;
@@ -328,36 +493,40 @@ public class BlockScrambling {
 						case 4:{
 							p = (a<<24) | (r<<16) | b | (gr<<8);
 							break;
-						
+
 						}
 						case 5:{
 							p = (a<<24) | (gr<<8) | b | (r<<16);
 							break;
 						}
 						}
-						
+
 						imageChunks[i][j].setRGB(x, y, p);
 
 
 					}
 				}
-				
+
+
+
 				combineImage.createGraphics().drawImage(imageChunks[i][j], stackWidth, stackHeight, null);
 				stackHeight += imageChunks[i][j].getHeight();
 			}
+
 			stackWidth += imageChunks[i][0].getWidth();
 			stackHeight = 0;
 		}
-		
 
-		
+		Keys.imageKey = imageChunks;
+
 		ImageIO.write(combineImage, "jpg", new File("img/join.jpg"));
 		System.out.println("Image rejoin done.");
 
 		FileUtils.forceDelete(new File("split")); 
+
 	}
 
-	
+
 	public static void writeKey(BufferedImage[][] img, int w, int h, int type, int cols, int rows) throws IOException {
 
 		//Keys.imageKey = new BufferedImage[cols + 1][rows + 1];
@@ -386,8 +555,8 @@ public class BlockScrambling {
 		//writeImage(new File("Decrypt/KEY.jpg"), combineImage);
 		System.out.println("Image REEEjoin done.");
 	}
-	
-	
+
+
 	/**
 	 * source https://apilevel.wordpress.com/2014/08/03/jpeg-quality-and-size-reduction-when-using-imageio-write/
 	 * @param file
@@ -408,5 +577,27 @@ public class BlockScrambling {
 		writer.write(null, new IIOImage(img ,null,null),iwp);
 		writer.dispose();
 	}
-	*/
+	 */
+
+	static void fillList(int m, int n){
+		Random rand = new Random();		
+		for(int i=0; i<m; i++){
+			for(int j=0; j<n; j++){
+				int i1 = rand.nextInt(m);
+				int j1 = rand.nextInt(n);
+
+				String n1 = Integer.toString(i1);
+				String n2 = Integer.toString(j1);
+
+				String finalString = n1+" "+n2;
+
+				list.add(finalString);
+			}
+		}
+
+		Set<String> mySet = new HashSet(list);
+		list.clear();
+		list.addAll(mySet);
+
+	}
 }

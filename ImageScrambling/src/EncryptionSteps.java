@@ -245,7 +245,9 @@ public class EncryptionSteps {
 		Random rand=new Random();
 		Keys.splitMode = rand.nextInt(2);
 		System.out.println(Keys.splitMode);
-
+		
+		Keys.splitMode=0; 					//TOGLIEREEEEEEEEEEEEEE!
+		
 		if(Keys.splitMode == 0){
 			// horizontally
 			System.out.println("HORIZONTALLY");
