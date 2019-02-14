@@ -44,7 +44,7 @@ public class DecryptionSteps {
 
 				
 				RGBInverseTrasformation rgb = Keys.listValueRGBInverse[j][i];
-
+				//Inverse negative-positive transformation
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
 						int p = imgs[i][j].getRGB(x, y);	
@@ -76,6 +76,7 @@ public class DecryptionSteps {
 
 				//System.out.println(key.toString());
 
+				//Inversione blocchi
 				switch (inversion) {
 				case 0:{
 					break;
@@ -116,6 +117,7 @@ public class DecryptionSteps {
 				}
 				}
 
+				//Inverse rotation
 				switch(rotation){
 				case 0:{
 					break;
@@ -187,40 +189,24 @@ public class DecryptionSteps {
 					break;
 				}
 				}
-				 
-
-				//combineImage.createGraphics().drawImage(imgs[i][j], stackWidth, stackHeight, null);
-				//stackHeight += imgs[i][j].getHeight();
 			}
-			//stackWidth += imgs[i][0].getWidth();
-			//stackHeight = 0;
+		
 		}
 
+		//Block assembling
 		BufferedImage image = null;
 		for(int i=0; i<imgs.length; i++){
 			for(int j=0; j<imgs[i].length; j++){
-
-				CoordsImageBlock coords = new CoordsImageBlock();
 				for(CoordsImageBlock cords : Keys.listCoordsImage.keySet()){
 					if(cords.getI() == i && cords.getJ() == j){
 						image = Keys.listCoordsImage.get(cords);
-						//CoordsImageBlock newCords = Keys.listCoordsImage.get(cords);
-						//System.out.println("real "+cords.toString()+" new "+newCords.toString());
-						//coords.setI(newCords.getI());
-						//coords.setJ(newCords.getJ());
 					}
 				}
-
-				
 				finalsImg[i][j] = image;
-
-
 			}
 
 		}
 		
-		
-
 		for (int i = 0; i <= Keys.cols; i++) {
 			for (int j = 0; j <= Keys.rows; j++) {	
 				combineImage.createGraphics().drawImage(finalsImg[i][j], stackWidth, stackHeight, null);
@@ -231,11 +217,11 @@ public class DecryptionSteps {
 		}
 
 
-		writeImage(new File("Decrypt/test.jpg"), combineImage);
+		writeImage(new File("Decrypt/finalInverse.jpg"), combineImage);
 	}
 
 	public static void gray2YCbCr() throws IOException{
-		img = ImageIO.read(new File("Decrypt/KEY.jpg"));
+		img = ImageIO.read(new File("Decrypt/finalInverse.jpg"));
 
 		int width = img.getWidth();
 		int height = img.getHeight();
@@ -399,14 +385,33 @@ public class DecryptionSteps {
 		//ImageIO.write(base,"jpg", new File("Decrypt/final.jpg"));
 		File outfile = new File("Decrypt/final.jpg");
 
-		Kernel kernel = new Kernel(3, 3, new float[] {
-				0.0f ,-0.3f,  0.0f,
-				-0.3f , 2.2f, -0.3f,
-				0.0f ,-0.3f,  0.0f
-		});
-		BufferedImageOp op = new ConvolveOp(kernel);
-		base = op.filter(base, null);
+		
 
+		writeImage(outfile, base);
+
+	}
+	
+	public static void mergeRGBEval(File r, File g, File b, int index) throws IOException{
+		BufferedImage red = ImageIO.read(r);
+		BufferedImage green = ImageIO.read(g);
+		BufferedImage blue = ImageIO.read(b);
+
+		BufferedImage base = new BufferedImage(red.getWidth(), red.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+
+		for(int y = 0; y< red.getHeight(); y++){
+			for(int x = 0; x < red.getWidth(); x++){
+
+				int rgb = (red.getRGB(x, y) & 0x00FF0000) | (green.getRGB(x, y) & 0x0000FF00) | (blue.getRGB(x, y) & 0x000000FF);
+		        
+		        base.setRGB(x, y, (rgb | 0xFF000000));
+			}
+		}
+
+		//ImageIO.write(base,"jpg", new File("Decrypt/final.jpg"));
+		File outfile = new File("Decrypt/final"+index+".jpg");
+
+		
 		writeImage(outfile, base);
 
 	}

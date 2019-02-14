@@ -26,21 +26,21 @@ import com.sun.media.jai.codecimpl.JPEGImageDecoder;
 import com.sun.media.jai.codecimpl.util.Range;
 
 
-public class Runner {
+public class TesterOrginalConvetional8 {
 
 	public static void main(String[] args) throws Exception {
 		
-		int evaluate = 0;
+		int evaluate = 1;
 		
 		/*EVALUATION*/
 		if(evaluate == 1) {									
 			int quality = 100;
 			int count = 0;
 			
-					
+			
 			for(int i=1; i<=20; i++){
 				
-				if(i>1) {
+				if(quality>100) {
 					break;
 				} 
 				
@@ -52,71 +52,26 @@ public class Runner {
 				}
 
 				File out = EncryptionSteps.initializeEval(input,i);
-
-				//String outFile = "img/"+out.getName();
 				
-
-				File red = EncryptionSteps.extractRed(out);
-				File green = EncryptionSteps.extractGreen(out);
-				File blue = EncryptionSteps.extractBlue(out);
+				int blockSize = 8;         							//Block size
 				
-				/*COMPRESSIONE IMMAGINI ROSSO, BLU, VERDE*/
-				String[] arg1 = {"img/red.jpg","img/red.jpg","-subsamp","444","-q",String.valueOf(quality)};
-
-				TJExample.main(arg1);								//Compression of key image
-				
-				String[] arg2 = {"img/blue.jpg","img/blue.jpg","-subsamp","444","-q",String.valueOf(quality)};
-
-				TJExample.main(arg2);								//Compression of key image
-				
-				String[] arg3 = {"img/green.jpg","img/green.jpg","-subsamp","444","-q",String.valueOf(quality)};
-
-				TJExample.main(arg3);								//Compression of key image
-				/*	*/
-				
-
-				File ycbr_red = EncryptionSteps.rgb2ycbcr(red);
-				File ycbr_green = EncryptionSteps.rgb2ycbcr(green);
-				File ycbc_blue = EncryptionSteps.rgb2ycbcr(blue);
-
-				File final_image = EncryptionSteps.concatenateImage(ycbr_red, ycbr_green, ycbc_blue);
-				File output = EncryptionSteps.convertToGray(final_image);
-
-
 				new File("split").mkdir();
 				FileUtils.cleanDirectory(new File("split")); 
-
-				new File("Decrypt").mkdir();
-				int blockSize = 8;         							//Block size
-				BlockScrambling.splitImage(output,blockSize);
-				BlockScrambling.join();
-
-
-				System.out.println("quality "+quality);
-
 				
-							
-				/*DECOMPRESSIONE IMMAGINI ROSSO, BLU, VERDE*/
-				String[] arg4 = {"img/red.jpg"};				//JBENCH Decompression of key image
+				BlockScrambling.splitImage(out,blockSize);
+				BlockScrambling.join(i);
+			
+			
+				File key = new File("Decrypt/KEY"+i+".jpg");
+				
+				String[] arg1 = {key.getAbsolutePath(),"img/final"+i+".jpg","-subsamp","444","-q",String.valueOf(quality)};
+				TJExample.main(arg1);								//Compression of key image
+
+				String[] arg4 = {"img/final"+i+".jpg"};				//JBENCH Decompression of key image
 				TJBench.main(arg4);									//JBENCH generate decompressed image (compressed_decompressed)			
 				
-				String[] arg5 = {"img/blue.jpg"};				//JBENCH Decompression of key image
-				TJBench.main(arg5);									//JBENCH generate decompressed image (compressed_decompressed)				
-		
-				String[] arg6 = {"img/green.jpg"};				//JBENCH Decompression of key image
-				TJBench.main(arg6);									//JBENCH generate decompressed image (compressed_decompressed)	
-				/*	*/
-		
-		
-				DecryptionSteps.inverseNegativePositve();
-				DecryptionSteps.gray2YCbCr();
-				DecryptionSteps.separateImage();
-				DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));
-				DecryptionSteps.Ycbr2Rgb(new File("Decrypt/greenYCBR.jpg"));
-				DecryptionSteps.Ycbr2Rgb(new File("Decrypt/blueYCBR.jpg"));
-				DecryptionSteps.mergeRGBEval(new File("Decrypt/red.jpg"), new File("Decrypt/green.jpg"), new File("Decrypt/blue.jpg"),i);
+
 				
-								
 				if(i==20) {
 					i = 0;
 					quality= quality+5;
@@ -124,7 +79,6 @@ public class Runner {
 				
 			}
 			
-		
 		} else {
 			
 			File input = new File("dataset/ucid00002.tif");
@@ -151,7 +105,7 @@ public class Runner {
 			BlockScrambling.splitImage(output,blockSize);
 			BlockScrambling.join();
 			
-			int quality = 80;
+			int quality = /*new Random().nextInt((100-70)+1)+70*/ 80;
 			
 			String[] arg = {"img/join.jpg","img/compressed.jpg","-subsamp","444","-q",String.valueOf(quality)};
 
@@ -160,7 +114,7 @@ public class Runner {
 			String[] arg2 = {"img/compressed.jpg"};
 			TJBench.main(arg2);						/*DECOMPRESSION*/
 			
-			DecryptionSteps.inverseNegativePositve();
+			
 			DecryptionSteps.gray2YCbCr();
 			DecryptionSteps.separateImage();
 			DecryptionSteps.Ycbr2Rgb(new File("Decrypt/redYCBR.jpg"));

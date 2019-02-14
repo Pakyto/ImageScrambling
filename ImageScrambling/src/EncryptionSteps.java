@@ -51,6 +51,30 @@ public class EncryptionSteps {
 		return out;
 	}
 
+	public static File initializeEval(File input, int index) throws IOException{
+		File out = input;
+		
+		Files.deleteIfExists(Paths.get("img/out.jpg"));
+		
+		if(input.getName().contains(".tif")){
+			FileSeekableStream stream = null;
+
+			stream = new FileSeekableStream(input);
+			ImageDecoder dec = ImageCodec.createImageDecoder("tiff", stream,null);
+			RenderedImage image =   dec.decodeAsRenderedImage(0);
+			BufferedImage bi = PlanarImage.wrapRenderedImage(image).getAsBufferedImage();
+			//JAI.create("filestore",image ,"img/out.jpg","JPEG");
+			out = new File ("img/out"+index+".jpg");
+			writeImage(out, bi);
+		}
+		img = ImageIO.read(out);
+
+		//get width and height
+		width = img.getWidth();
+		height = img.getHeight();
+		return out;
+	}
+	
 	public static File extractBlue(File f) throws IOException{
 		img = ImageIO.read(f);
 

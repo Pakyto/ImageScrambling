@@ -276,10 +276,10 @@ final class TJBench {
     else if (tilew != w || tileh != h)
       sizeStr = new String(tilew + "x" + tileh);
     else
-      sizeStr = new String("full");
+      sizeStr = new String("decompressed");
     if (decompOnly){
     	System.out.println("decomponly");
-      tempStr = new String(fileName + "_" + sizeStr + ".jpg");
+      tempStr = new String(fileName + /*"_" + sizeStr +*/ ".jpg");
     }
     else
       tempStr = new String(fileName + "_" + SUBNAME[subsamp] + qualStr +
